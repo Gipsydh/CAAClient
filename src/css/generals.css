@@ -1,0 +1,23 @@
+*{
+ margin: 0;
+ padding: 0;
+ box-sizing: border-box;
+}
+.button{
+ cursor: pointer;
+}
+
+.btn1{
+ color:  var(--button1-color);
+}
+.btn2{
+ color: var(--button2-color);
+}
+.btn1 i{
+ font-size: 20px;
+}
+h2{
+ font-size: 30px;
+ font-family: "Mukta";
+ color:var(--chatBar-color);
+}
