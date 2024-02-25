@@ -4,8 +4,9 @@ import ChatList from './ChatList'
 import { useEffect, useState, useMemo, useRef } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
-const ShowChat = ({ username }) => {
+const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName }) => {
   const [chatList, setChatList] = useState([])
+  const [currUser,setCurrUser]=useState("")
   const [sortedRoomId, setSortedRoomId] = useState('')
   const [checkStatus, setCheckStaus] = useState(false)
   const currRoomID = useRef(null)
@@ -24,7 +25,7 @@ const ShowChat = ({ username }) => {
         for (let i = 0; i < resp.data.length; i++) {
           const obj = {
             msg: resp.data[i].text,
-            status: resp.data[i].receiver === username ? 'receiver' : 'sender',
+            status: resp.data[i].receiver !== username ? 'receiver' : 'sender',
             chatRoomID: resp.data[i].currRoomID,
             username: username,
           }
@@ -44,6 +45,7 @@ const ShowChat = ({ username }) => {
       .get('http://localhost:3001/api/v1/chats', { withCredentials: true })
       .then((resp) => {
         roomID = resp.data.username
+        setCurrUser(roomID)
         //  if (roomID === 'subhnaskar11@gmail.com') {
         //    roomID += '|onibabahaha123456@gmail.com'
         //  } else {
@@ -97,8 +99,9 @@ const ShowChat = ({ username }) => {
   }
   return (
     <>
-      <ChatHeading checkStatus={checkStatus}></ChatHeading>
-      <ChatList list={chatList}></ChatList>
+      <ChatHeading removeChatBar={removeChatBar}
+      setRemoveChatBar={setRemoveChatBar} checkStatus={checkStatus} username={currShowUserName}></ChatHeading>
+      <ChatList username={currUser} list={chatList}></ChatList>
       <SendChat
         func={handleSubmit}
         handleOnchange={handleOnchange}

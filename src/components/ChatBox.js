@@ -9,8 +9,21 @@ import { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 const ChatBox = () => {
-  const [currShowUser, setCurrShowUser] = useState("")
+  const [identifier,setIdentifier]=useState(-1)
+  const [width, setWidth] = useState(window.innerWidth)
+  const[currShowUserName, setCurrShowUserName]=useState('')
+  useEffect(() => {
+    const handleWidth = () => {
+      setWidth(window.innerWidth)
+    }
+    window.addEventListener('resize', handleWidth)
+    return () => {
+      window.removeEventListener('resize', handleWidth)
+    }
+  }, [])
+  const [currShowUser, setCurrShowUser] = useState('')
   const [currFrnds, setCurrFrnds] = useState([])
+  const [removeChatBar,setRemoveChatBar]=useState(false)
   const socket = useMemo(() => {
     return io('http://localhost:3001', {
       withCredentials: true,
@@ -45,8 +58,15 @@ const ChatBox = () => {
     socket.on('check-status', (m) => {})
   }, [])
   const selectFromFriends = (username) => {
+    if(width<700){
+      setRemoveChatBar(!removeChatBar);
+    }
     setCurrShowUser(username)
   }
+  const getFromDetails=(username)=>{
+    setCurrShowUserName(username)
+  }
+
   return (
     <>
       <div className='box'>
@@ -55,7 +75,7 @@ const ChatBox = () => {
           <SideOptions></SideOptions>
           <Settings></Settings>
         </section>
-        <section className='chatBar'>
+        <section className={removeChatBar?`chatBar chatBarRemove`:`chatBar`}>
           <Search
             type={'search'}
             text={'Enter for search'}
@@ -67,18 +87,27 @@ const ChatBox = () => {
             {currFrnds.map((val, i) => {
               return (
                 <Friends
+
                   username={val}
                   key={i}
+                  identifier={identifier}
+                  currIden={i}
+                  setIdentifier={setIdentifier}
                   selectFromFriends={selectFromFriends}
+                  getFromDetails={getFromDetails}
                 ></Friends>
               )
             })}
           </div>
         </section>
-        <section className='chats'>
+        <section className='chats' >
           {currShowUser === '' ? (
             <>
-              <div className='welcomeBox'>
+              <div
+                className={
+                  width < 700 ? `welcomeBox notWelcomeBox` : `welcomeBox`
+                }
+              >
                 <div
                   className='logoImg'
                   style={{
@@ -94,7 +123,7 @@ const ChatBox = () => {
               </div>
             </>
           ) : (
-            <ShowChat username={currShowUser}></ShowChat>
+            <ShowChat removeChatBar={removeChatBar} setRemoveChatBar={setRemoveChatBar} username={currShowUser} currShowUserName={currShowUserName}></ShowChat>
           )}
         </section>
       </div>

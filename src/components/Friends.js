@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react'
 import Profile from './Profile'
 import axios from 'axios'
 
-const Friends = ({ username, selectFromFriends }) => {
+const Friends = ({
+  username,
+
+  identifier,
+  currIden,
+  setIdentifier,
+  selectFromFriends,
+  getFromDetails,
+}) => {
   const [currInfo, setCurrInfo] = useState({})
   useEffect(async () => {
     await axios
@@ -21,9 +29,20 @@ const Friends = ({ username, selectFromFriends }) => {
   }, [])
   return (
     <>
-      <div className='friends' onClick={()=>{
-        selectFromFriends(username)
-      }}>
+      <div
+        className={identifier === currIden ? `friends effect` : `friends`}
+        onClick={() => {
+          selectFromFriends(username)
+          getFromDetails(currInfo.fullName)
+          setIdentifier(currIden)
+        }}
+      >
+        <div
+          className='effectGlow'
+          style={{
+            display: identifier === currIden ? `block` : `none`,
+          }}
+        ></div>
         <div className='upper'>
           <Profile
             pic={currInfo.picture}

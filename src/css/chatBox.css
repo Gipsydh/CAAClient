@@ -21,7 +21,9 @@
 }
 
 .chats {
+  transition: 0.3s ease-in-out;
   position: relative;
+  left: 0%;
   width: calc(100% - 480px);
   border-left: 2px solid var(--inputBar-color);
 }
@@ -126,7 +128,7 @@
   position: relative;
   overflow: hidden;
 }
-.friends .addToFriend{
+.friends .addToFriend {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -139,8 +141,8 @@
   color: var(--button2-color);
   font-size: 13px;
 }
-.addToFriend i{
-  margin-left: 10px ;
+.addToFriend i {
+  margin-left: 10px;
 }
 .friends:hover {
   box-shadow: 0 0 30px 1px rgb(209, 209, 209);
@@ -233,62 +235,58 @@
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  
 }
-.chatList{
- /* background-color: red; */
- height: calc(100% - 200px);
- overflow-y:scroll ;
- padding: 0 10px;
+.chatList {
+  /* background-color: red; */
+  height: calc(100% - 200px);
+  overflow-y: scroll;
+  padding: 0 10px;
+  scroll-behavior: smooth;
 }
-.chatList .chatLeft{
- display: flex;
- justify-content: flex-end;
- align-items: center;
+.chatList .chatLeft {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
-.chatList .chatData{
- margin: 20px 0;
+.chatList .chatData {
+  margin: 20px 0;
 }
-.chatList .chatLeft span{
- color: white;
- border-radius: 40px;
- border-bottom-right-radius: 8px;
- padding: 10px 25px;
- font-size: 19px;
+.chatList .chatLeft span {
+  color: white;
+  border-radius: 40px;
+  border-bottom-right-radius: 8px;
+  padding: 10px 25px;
+  font-size: 19px;
   background-color: var(--chatColor-left);
-
-
 }
-.chatList .chatRight{
- display: flex;
- justify-content: flex-start;
- align-items: center;
+.chatList .chatRight {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
-.chatList .chatRight span{
-  
- color: var(--text-primary-color);
- border-radius: 40px;
- border-top-left-radius: 8px;
- padding: 10px 25px;
- font-size: 19px;
+.chatList .chatRight span {
+  color: var(--text-primary-color);
+  border-radius: 40px;
+  border-top-left-radius: 8px;
+  padding: 10px 25px;
+  font-size: 19px;
   box-shadow: 5px 7px 41px -3px #63747e47;
-
 }
 
-.addFriend{
+.addFriend {
   position: absolute;
   height: 80%;
   width: 100%;
-  background-color:var(--chatBar-color);
+  background-color: var(--chatBar-color);
   left: 0%;
   top: 20%;
   z-index: 20;
   padding: 25px;
 }
-.cross{
+.cross {
   transform: rotate(45deg);
 }
-.leftComingBar{
+.leftComingBar {
   position: absolute;
   left: 80px;
   z-index: 100;
@@ -296,19 +294,19 @@
   height: 100vh;
   width: 400px;
   background-color: var(--sidebar-color);
-  animation: leftSwipe 0.3s   1  ;
+  animation: leftSwipe 0.3s 1;
 }
 @keyframes leftSwipe {
-  from{
+  from {
     opacity: 0;
     left: 0;
   }
-  to{
+  to {
     opacity: 1;
     left: 80px;
   }
 }
-.leftComingBar .heading{
+.leftComingBar .heading {
   height: 110px;
   display: flex;
   justify-content: flex-start;
@@ -316,10 +314,10 @@
   padding-left: 25px;
   border-bottom: 2px solid var(--inputBar-color);
 }
-.allNotifications{
+.allNotifications {
   padding: 25px;
 }
-.leftComingBar .singleNotification{
+.leftComingBar .singleNotification {
   /* background-color: white; */
   display: flex;
   line-height: 15px;
@@ -328,23 +326,22 @@
   justify-content: space-between;
   margin-bottom: 15px;
 }
-.leftComingBar .acceptBtn{
+.leftComingBar .acceptBtn {
   padding: 10px 20px;
   background-color: var(--chatColor-left);
   border-radius: 20px;
-
 }
-.leftComingBar  .info{
+.leftComingBar .info {
   margin-left: 15px;
 }
-.acceptBtn span{
-  color:white;
+.acceptBtn span {
+  color: white;
 }
-.leftComingBar .singleNotification h5{
+.leftComingBar .singleNotification h5 {
   color: white;
   line-height: 20px;
 }
-.leftComingBar .singleNotification .reject{
+.leftComingBar .singleNotification .reject {
   height: 40px;
   width: 40px;
   display: flex;
@@ -352,16 +349,18 @@
   align-items: center;
   color: white;
 }
-.leftComingBar .singleNotification .info , .leftComingBar .singleNotification .info span{
+.leftComingBar .singleNotification .info,
+.leftComingBar .singleNotification .info span {
   overflow: hidden;
   width: 140px;
   text-overflow: ellipsis;
 }
-.leftComingBar .singleNotification .info ,.leftComingBar .singleNotification .info span ::after{
+.leftComingBar .singleNotification .info,
+.leftComingBar .singleNotification .info span ::after {
   content: '\2026';
   color: white;
 }
-.fadeUp{
+.fadeUp {
   transition: 0.3s ease-in-out;
   animation: fadeup 0.3s 1;
   pointer-events: none;
@@ -369,14 +368,14 @@
 }
 
 @keyframes fadeup {
-  from{
+  from {
     opacity: 1;
   }
-  to{
+  to {
     opacity: 0.5;
   }
 }
-.welcomeBox{
+.welcomeBox {
   height: 100vh;
   width: 100%;
   display: flex;
@@ -387,18 +386,71 @@
   padding: 200px;
   text-align: center;
 }
-.logoImg{
- height: 200px;
- width: 200px;
-    background-repeat: no-repeat;
+.logoImg {
+  height: 200px;
+  width: 200px;
+  background-repeat: no-repeat;
   background-size: 500px;
   background-position: center;
 }
-.welcomeBox h2{
-  color:var(--text-primary-color);
+.welcomeBox h2 {
+  color: var(--text-primary-color);
   display: inline-block;
 }
-.welcomeBox span{
+.welcomeBox span {
   font-size: 20px;
   display: block;
+}
+.notWelcomeBox {
+  display: none;
+}
+.effect {
+  background-color: var(--sidebar-color);
+}
+.effectGlow {
+  position: absolute;
+  width: 3px;
+  left: 0px;
+  top: 0px;
+  box-shadow: 0 0 20px 2px var(--chatColor-left);
+  height: 100%;
+  background-color: var(--chatColor-left);
+}
+.effect h5 {
+  color: white;
+}
+@media all and (max-width: 700px) {
+  .sideBar {
+    position: absolute;
+    left: -80px;
+  }
+  .chats {
+    width: 100%;
+  }
+  .chatBar {
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+  }
+  .chatBarRemove {
+    left: -100%;
+  }
+  .chatHeading .options {
+    width: 130px;
+  }
+  .chatHeading .options i {
+    font-size: 18px;
+  }
+  .chatHeading {
+    height: 80px;
+    padding: 0 10px;
+  }
+  .chatHeading .userInfo .info h5,
+  .chatHeading .userInfo .info span {
+    font-size: 12px;
+    line-height: 11px;
+  }
+  .chatHeading .userInfo .info h5 {
+    height: 15px;
+  }
 }
