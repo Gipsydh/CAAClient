@@ -4,23 +4,37 @@ import ChatList from './ChatList'
 import { useEffect, useState, useMemo, useRef } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
-const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName }) => {
+const ShowChat = ({
+  removeChatBar,
+  setRemoveChatBar,
+  username,
+  currShowUserName,
+}) => {
   const [chatList, setChatList] = useState([])
-  const [currUser,setCurrUser]=useState("")
+  const [currUser, setCurrUser] = useState('')
   const [sortedRoomId, setSortedRoomId] = useState('')
+  const [notificationPerm, setNotificationPerm] = useState(
+    Notification.permission
+  )
   const [checkStatus, setCheckStaus] = useState(false)
   const currRoomID = useRef(null)
   const socket = useMemo(() => {
-    return io('http://localhost:3001', {
+    return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
     })
   }, [])
   const getChatsFromDB = async () => {
     console.log('userToken:' + currRoomID.current)
     await axios
-      .post('http://localhost:3001/api/v1/chats/getChats', {
-        currRoomID: currRoomID.current,
-      })
+      .post(
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getChats`,
+        {
+          currRoomID: currRoomID.current,
+        },
+        {
+          withCredentials: true,
+        }
+      )
       .then((resp) => {
         for (let i = 0; i < resp.data.length; i++) {
           const obj = {
@@ -28,8 +42,9 @@ const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName })
             status: resp.data[i].receiver !== username ? 'receiver' : 'sender',
             chatRoomID: resp.data[i].currRoomID,
             username: username,
+            time: resp.data[i].time,
           }
-          setChatList((prevChatList)=>[...prevChatList, obj])
+          setChatList((prevChatList) => [...prevChatList, obj])
         }
       })
   }
@@ -42,7 +57,7 @@ const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName })
     })
     let roomID = ''
     axios
-      .get('http://localhost:3001/api/v1/chats', { withCredentials: true })
+      .get( `${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, { withCredentials: true })
       .then((resp) => {
         roomID = resp.data.username
         setCurrUser(roomID)
@@ -69,7 +84,22 @@ const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName })
     })
   }, [username])
   socket.on('receive-msg', (msg) => {
-    setChatList([...chatList, msg])
+    // if (notificationPerm==='granted') {
+    //   new Notification('ChatNest ',{
+    //     body:"this is a notification"
+    //   })
+    // }
+    // else if(notificationPerm!=='denied'){
+    //   Notification.requestPermission().then(permission=>{
+    //     setNotificationPerm(permission)
+    //     if(permission==='granted'){
+    //       new Notification('ChatNest ', {
+    //         body: 'this is a notification',
+    //       })
+    //     }
+    //   })
+    // }
+    setChatList([...chatList, { ...msg, time: 'Today' }])
   })
 
   const [msg, setMsg] = useState('')
@@ -82,13 +112,17 @@ const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName })
       username: username,
       chatRoomID: currRoomID.current,
     }
-    axios.post('http://localhost:3001/api/v1/chats', obj, {
-      withCredentials: true,
-    })
+    axios.post(
+      `${process.env.REACT_APP_LIVE_URL}/api/v1/chats`,
+      obj,
+      {
+        withCredentials: true,
+      }
+    )
     socket.emit('message', { obj, target: currRoomID.current })
     console.log('current chat obj')
     console.log(obj)
-    setChatList((prevChatList) => [...chatList, obj])
+    setChatList((prevChatList) => [...chatList, { ...obj, time: 'today' }])
     setMsg('')
   }
   socket.on('onDisconnect', () => {
@@ -99,8 +133,12 @@ const ShowChat = ({removeChatBar, setRemoveChatBar, username,currShowUserName })
   }
   return (
     <>
-      <ChatHeading removeChatBar={removeChatBar}
-      setRemoveChatBar={setRemoveChatBar} checkStatus={checkStatus} username={currShowUserName}></ChatHeading>
+      <ChatHeading
+        removeChatBar={removeChatBar}
+        setRemoveChatBar={setRemoveChatBar}
+        checkStatus={checkStatus}
+        username={currShowUserName}
+      ></ChatHeading>
       <ChatList username={currUser} list={chatList}></ChatList>
       <SendChat
         func={handleSubmit}

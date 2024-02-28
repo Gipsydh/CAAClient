@@ -4,11 +4,13 @@ import axios from "axios"
 const Notifications=()=>{
  const [notification,setNotification] = useState([])
  const handleNotification=async()=>{
-  await axios.get('http://localhost:3001/api/v1/chats/getNotification',{
-   withCredentials:true
-  }).then((resp)=>{
-   setNotification(resp.data)
-  })
+  await axios
+    .get(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getNotification`, {
+      withCredentials: true,
+    })
+    .then((resp) => {
+      setNotification(resp.data)
+    })
  }
  useEffect(()=>{
   handleNotification()

@@ -5,27 +5,29 @@ const ChatHeading = ({
   checkStatus,
   username,
 }) => {
-  
   return (
     <>
       <header className='chatHeading'>
-        <div
-          className='backBtn button'
-          onClick={() => {
-            setRemoveChatBar(!removeChatBar)
-          }}
-        >
-          <i class='fa-solid fa-angle-left'></i>
-        </div>
-        <div className='userInfo'>
-          <Profile
-            backG={checkStatus === true ? '#34D859' : '#a2a2a2'}
-            bg={'white'}
-            ht={'40px'}
-            wt={'40px'}
-          ></Profile>
-          <div className='info'>
-            <h5>{username}</h5>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div
+            className='backBtn button'
+            onClick={() => {
+              setRemoveChatBar(!removeChatBar)
+            }}
+          >
+            <i class='fa-solid fa-angle-left'></i>
+          </div>
+          <div className='userInfo'>
+            <Profile
+              pic={username.picture}
+              backG={checkStatus === true ? '#34D859' : '#a2a2a2'}
+              bg={'white'}
+              ht={'40px'}
+              wt={'40px'}
+            ></Profile>
+          </div>
+          <div className='info' style={{ marginLeft: '20px' }}>
+            <h5>{username.username}</h5>
             <div className='statusUser'>
               <span>{checkStatus === true ? 'Online' : 'Offline'}</span>
               <span> . </span>

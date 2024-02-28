@@ -9,7 +9,7 @@ const SingleNotification = (user) => {
   const handleAcceptBtn = async () => {
     await axios
       .post(
-        'http://localhost:3001/api/v1/chats/acceptFrndReq',
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/acceptFrndReq`,
         {
           username: currUser.email,
         },
@@ -26,7 +26,7 @@ const SingleNotification = (user) => {
   const handleReject = async () => {
     await axios
       .post(
-        'http://localhost:3001/api/v1/chats/rejectFrndReq',
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/rejectFrndReq`,
         {
           username: currUser.email,
         },
@@ -38,16 +38,15 @@ const SingleNotification = (user) => {
         if (resp.status === 200) {
           setFlag(true)
           setTimeout(() => {
-            
             setDecline(true)
-          }, 300);
+          }, 300)
         }
       })
   }
   const handleUser = async () => {
     await axios
       .post(
-        'http://localhost:3001/api/v1/chats/getOneUser',
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getOneUser`,
         {
           username: user.user.from,
         },

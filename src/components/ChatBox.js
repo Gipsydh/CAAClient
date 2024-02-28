@@ -9,9 +9,10 @@ import { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 const ChatBox = () => {
-  const [identifier,setIdentifier]=useState(-1)
+  const [identifier, setIdentifier] = useState(-1)
   const [width, setWidth] = useState(window.innerWidth)
-  const[currShowUserName, setCurrShowUserName]=useState('')
+  const [currShowUserName, setCurrShowUserName] = useState(null)
+  const [currUserLogin, setCurrUserLogin] = useState({})
   useEffect(() => {
     const handleWidth = () => {
       setWidth(window.innerWidth)
@@ -21,18 +22,36 @@ const ChatBox = () => {
       window.removeEventListener('resize', handleWidth)
     }
   }, [])
+  const getCurrUserInfo = async () => {
+    await axios
+      .get(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getLoginUser`, {
+        withCredentials: true,
+      })
+      .then((resp) => {
+        setCurrUserLogin(resp.data[0])
+      })
+      .catch((e) => {
+        window.location.href = `${process.env.REACT_APP_LIVE_CLIENT}/login`
+      })
+  }
+  useEffect(() => {
+    getCurrUserInfo()
+  }, [])
+  useEffect(() => {
+    console.log(currUserLogin)
+  }, [currUserLogin])
   const [currShowUser, setCurrShowUser] = useState('')
   const [currFrnds, setCurrFrnds] = useState([])
-  const [removeChatBar,setRemoveChatBar]=useState(false)
+  const [removeChatBar, setRemoveChatBar] = useState(false)
   const socket = useMemo(() => {
-    return io('http://localhost:3001', {
+    return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
     })
   }, [])
   const handleFunc1 = async () => {
     await axios
       .get(
-        'http://localhost:3001/api/v1/chats/getUsers',
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getUsers`,
 
         {
           withCredentials: true,
@@ -58,24 +77,28 @@ const ChatBox = () => {
     socket.on('check-status', (m) => {})
   }, [])
   const selectFromFriends = (username) => {
-    if(width<700){
-      setRemoveChatBar(!removeChatBar);
+    if (width < 700) {
+      setRemoveChatBar(!removeChatBar)
     }
     setCurrShowUser(username)
   }
-  const getFromDetails=(username)=>{
-    setCurrShowUserName(username)
+  const getFromDetails = (username, picture) => {
+    setCurrShowUserName({ username: username, picture: picture })
   }
 
   return (
     <>
       <div className='box'>
         <section className='sideBar'>
-          <Profile bg={'#262626'}></Profile>
+          {currUserLogin && (
+            <Profile pic={currUserLogin.picture} bg={'#262626'}></Profile>
+          )}
           <SideOptions></SideOptions>
           <Settings></Settings>
         </section>
-        <section className={removeChatBar?`chatBar chatBarRemove`:`chatBar`}>
+        <section
+          className={removeChatBar ? `chatBar chatBarRemove` : `chatBar`}
+        >
           <Search
             type={'search'}
             text={'Enter for search'}
@@ -87,7 +110,6 @@ const ChatBox = () => {
             {currFrnds.map((val, i) => {
               return (
                 <Friends
-
                   username={val}
                   key={i}
                   identifier={identifier}
@@ -100,7 +122,7 @@ const ChatBox = () => {
             })}
           </div>
         </section>
-        <section className='chats' >
+        <section className='chats'>
           {currShowUser === '' ? (
             <>
               <div
@@ -123,7 +145,12 @@ const ChatBox = () => {
               </div>
             </>
           ) : (
-            <ShowChat removeChatBar={removeChatBar} setRemoveChatBar={setRemoveChatBar} username={currShowUser} currShowUserName={currShowUserName}></ShowChat>
+            <ShowChat
+              removeChatBar={removeChatBar}
+              setRemoveChatBar={setRemoveChatBar}
+              username={currShowUser}
+              currShowUserName={currShowUserName}
+            ></ShowChat>
           )}
         </section>
       </div>

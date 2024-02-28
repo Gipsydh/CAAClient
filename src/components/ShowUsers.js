@@ -5,18 +5,23 @@ const ShowUsers = ({ user }) => {
   const [isFriend, setIsFriend] = useState(false)
   // console.log(user)
   const sendRequest=async()=>{
-   await axios.post("http://localhost:3001/api/v1/chats/sendReq",{
-    username:user.email
-   },{
-    withCredentials:true
-   }).then((resp)=>{
-   })
+   await axios
+     .post(
+       `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/sendReq`,
+       {
+         username: user.email,
+       },
+       {
+         withCredentials: true,
+       }
+     )
+     .then((resp) => {})
   }
   const getUsers=async () => {
     {
       await axios
         .post(
-          'http://localhost:3001/api/v1/chats/isFriend',
+          `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/isFriend`,
           { username: user.email },
           { withCredentials: true }
         )

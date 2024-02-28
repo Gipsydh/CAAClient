@@ -15,7 +15,7 @@ const Friends = ({
   useEffect(async () => {
     await axios
       .post(
-        'http://localhost:3001/api/v1/chats/getOneUser',
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getOneUser`,
         {
           username: username,
         },
@@ -33,7 +33,7 @@ const Friends = ({
         className={identifier === currIden ? `friends effect` : `friends`}
         onClick={() => {
           selectFromFriends(username)
-          getFromDetails(currInfo.fullName)
+          getFromDetails(currInfo.fullName,currInfo.picture)
           setIdentifier(currIden)
         }}
       >

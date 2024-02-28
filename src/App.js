@@ -6,7 +6,6 @@ import { Home } from './pages/Home'
 import Chats from './pages/Chats'
 import { Login } from './pages/Login'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
 // import { jwtDecode } from 'jwt-decode'
 // import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 function App() {

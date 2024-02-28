@@ -249,13 +249,24 @@
   align-items: center;
 }
 .chatList .chatData {
-  margin: 20px 0;
+  position: relative;
+
+  margin: 20px 0 20px 0;
 }
+.chatList .chatData span {
+  
+  z-index: 20;
+  transition: 0.1s ease-in-out;
+}
+.chatList .chatData span:hover {
+  margin-bottom: 20px;
+}
+
 .chatList .chatLeft span {
   color: white;
   border-radius: 40px;
   border-bottom-right-radius: 8px;
-  padding: 10px 25px;
+  padding: 10px 35px;
   font-size: 19px;
   background-color: var(--chatColor-left);
 }
@@ -270,7 +281,8 @@
   border-top-left-radius: 8px;
   padding: 10px 25px;
   font-size: 19px;
-  box-shadow: 5px 7px 41px -3px #63747e47;
+  background: linear-gradient(145deg, #ffffff, #ffffff);
+  box-shadow: 5px 5px 10px #ededed, -5px -5px 10px #ffffff;
 }
 
 .addFriend {
@@ -419,7 +431,26 @@
 .effect h5 {
   color: white;
 }
+.chatHeading .backBtn {
+  display: none;
+}
+.chatList .chatData .msgTime {
+  position: absolute;
+  color: var(--button2-color);
+  font-size: 9px;
+  background-color: white;
+  top: 75%;
+  padding: 0;
+  margin: 0 15px;
+  z-index: 10;
+  box-shadow: none;
+}
+
+
 @media all and (max-width: 700px) {
+  .chatHeading .backBtn {
+    display: block;
+  }
   .sideBar {
     position: absolute;
     left: -80px;
