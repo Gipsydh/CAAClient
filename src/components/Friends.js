@@ -3,6 +3,9 @@ import Profile from './Profile'
 import axios from 'axios'
 
 const Friends = ({
+  currUserLogin,
+  socket,
+  io,
   username,
 
   identifier,
@@ -11,7 +14,38 @@ const Friends = ({
   selectFromFriends,
   getFromDetails,
 }) => {
+  const [checkStatus, setCheckStatus] = useState(false)
+  const [countNewMessage, setCountNewMessage] = useState(0)
+
+  useEffect(
+    () => {
+      if (socket) {
+        socket.on('online-status', (resp) => {
+          if (resp.includes(username)) {
+            setCheckStatus(true)
+          } else {
+            setCheckStatus(false)
+          }
+        })
+      }
+    },
+    // console.log(socket)
+    [socket]
+  )
+  useEffect(() => {
+    if (socket)
+      socket.on('receive-msg', (resp) => {
+        console.log(resp)
+      })
+  }, [socket])
+
   const [currInfo, setCurrInfo] = useState({})
+  const [lastMsg, setLastMsg] = useState('')
+  const setLastMsgFunc = (msg) => {
+    setLastMsg(msg)
+    setCountNewMessage(countNewMessage + 1)
+    console.log('setting last message')
+  }
   useEffect(async () => {
     await axios
       .post(
@@ -27,13 +61,32 @@ const Friends = ({
         setCurrInfo(resp.data[0])
       })
   }, [])
+  useEffect(async () => {
+    await axios
+      .post(
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getLastChat`,
+        {
+          username: username,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((resp) => {
+        console.log(resp)
+        console.log('last message is')
+        console.log(resp.data)
+        setLastMsg(resp.data.text)
+      })
+  }, [])
   return (
     <>
       <div
         className={identifier === currIden ? `friends effect` : `friends`}
         onClick={() => {
+          setCountNewMessage(0)
           selectFromFriends(username)
-          getFromDetails(currInfo.fullName,currInfo.picture)
+          getFromDetails(currInfo.fullName, currInfo.picture, currInfo.email)
           setIdentifier(currIden)
         }}
       >
@@ -45,14 +98,19 @@ const Friends = ({
         ></div>
         <div className='upper'>
           <Profile
+            socket={socket}
+            sender={currUserLogin}
+            receiver={currInfo.email}
             pic={currInfo.picture}
+            backG={checkStatus === true ? '#34D859' : '#a2a2a2'}
             bg={'#FAFAFA'}
             ht={'40px'}
             wt={'40px'}
+            setLastMsgFunc={setLastMsgFunc}
           ></Profile>
           <div className='info'>
             <h5>{currInfo.fullName}</h5>
-            <span>Online</span>
+            <span>{checkStatus === true ? 'Online' : 'Offline'}</span>
           </div>
           <div className='time'>
             <span>3h ago</span>
@@ -61,13 +119,17 @@ const Friends = ({
         <div className='lower'>
           <div className='msg'>
             <span>
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-              Quibusdam, veritatis?
+              {lastMsg === undefined || lastMsg === ''
+                ? 'No messages :)'
+                : lastMsg}
             </span>
           </div>
-          <div className='count'>
-            <span>4</span>
-          </div>
+
+          {countNewMessage > 0 && (
+            <div className='count'>
+              <span>{countNewMessage}</span>
+            </div>
+          )}
         </div>
       </div>
     </>

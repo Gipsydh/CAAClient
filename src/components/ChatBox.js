@@ -77,13 +77,13 @@ const ChatBox = () => {
     socket.on('check-status', (m) => {})
   }, [])
   const selectFromFriends = (username) => {
-    if (width < 700) {
+    if (width < 900) {
       setRemoveChatBar(!removeChatBar)
     }
     setCurrShowUser(username)
   }
-  const getFromDetails = (username, picture) => {
-    setCurrShowUserName({ username: username, picture: picture })
+  const getFromDetails = (username, picture,email) => {
+    setCurrShowUserName({ username: username, picture: picture,email:email })
   }
 
   return (
@@ -110,6 +110,9 @@ const ChatBox = () => {
             {currFrnds.map((val, i) => {
               return (
                 <Friends
+                  currUserLogin={currUserLogin.email}
+                  io={io}
+                  socket={socket}
                   username={val}
                   key={i}
                   identifier={identifier}
@@ -127,7 +130,7 @@ const ChatBox = () => {
             <>
               <div
                 className={
-                  width < 700 ? `welcomeBox notWelcomeBox` : `welcomeBox`
+                  width < 900 ? `welcomeBox notWelcomeBox` : `welcomeBox`
                 }
               >
                 <div

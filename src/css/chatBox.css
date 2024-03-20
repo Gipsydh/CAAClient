@@ -254,7 +254,6 @@
   margin: 20px 0 20px 0;
 }
 .chatList .chatData span {
-  
   z-index: 20;
   transition: 0.1s ease-in-out;
 }
@@ -445,9 +444,52 @@
   z-index: 10;
   box-shadow: none;
 }
-
-
-@media all and (max-width: 700px) {
+.showOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  position: absolute;
+  top: 80px;
+  right: 86px;
+  background-color: var(--chatBar-color);
+  padding: 20px;
+  border-radius: 20px;
+  border-top-right-radius: 2px;
+  box-shadow: 0 0 40px 2px rgba(0, 0, 0, 0.157);
+  z-index: 2000;
+  transition: 0.3s ease-in-out;
+  transform-origin: top right;
+}
+.showOptionsMotion {
+  animation: popUp 0.1s 1;
+}
+.showOptionsMotionRem {
+  animation: popDown 0.1s 1;
+}
+.codeDanger {
+  color: rgb(214, 94, 94);
+}
+@keyframes popUp {
+  from {
+    scale: 0;
+  }
+  to {
+    scale: 1;
+  }
+}
+@keyframes popDown {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 0;
+  }
+}
+@media all and (max-width: 900px) {
+  .showOptions {
+    right: 22px;
+  }
   .chatHeading .backBtn {
     display: block;
   }

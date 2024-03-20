@@ -57,32 +57,40 @@ const ShowChat = ({
     })
     let roomID = ''
     axios
-      .get( `${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, { withCredentials: true })
+      .get(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, {
+        withCredentials: true,
+      })
       .then((resp) => {
         roomID = resp.data.username
         setCurrUser(roomID)
+        let tempRoomID = [roomID]
         //  if (roomID === 'subhnaskar11@gmail.com') {
         //    roomID += '|onibabahaha123456@gmail.com'
         //  } else {
         //    roomID += '|subhnaskar11@gmail.com'
         //  }
-        roomID += `|${username}`
-        const charArr = roomID.split('')
-        charArr.sort()
-        let res = charArr.join('')
-        // setSortedRoomId(res)
-        console.log(res)
+        tempRoomID.push(username)
+
+        let res = tempRoomID.sort().join('|')
+
+        // roomID += `|${username}`
+
+        // const charArr = roomID.split('')
+        // charArr.sort()
+        // let res = charArr.join('')
+        setSortedRoomId(res)
+        // console.log(res)
         currRoomID.current = res
         socket.emit('enter', { res: res, username: resp.data.username })
       })
       .then(() => {
         getChatsFromDB()
       })
-
     socket.on('check-status', (m) => {
       setCheckStaus(true)
     })
   }, [username])
+  console.log(socket.on)
   socket.on('receive-msg', (msg) => {
     // if (notificationPerm==='granted') {
     //   new Notification('ChatNest ',{
@@ -104,6 +112,7 @@ const ShowChat = ({
 
   const [msg, setMsg] = useState('')
   const handleSubmit = (e) => {
+    if(msg==='')return;
     e.preventDefault()
 
     const obj = {
@@ -112,13 +121,9 @@ const ShowChat = ({
       username: username,
       chatRoomID: currRoomID.current,
     }
-    axios.post(
-      `${process.env.REACT_APP_LIVE_URL}/api/v1/chats`,
-      obj,
-      {
-        withCredentials: true,
-      }
-    )
+    axios.post(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, obj, {
+      withCredentials: true,
+    })
     socket.emit('message', { obj, target: currRoomID.current })
     console.log('current chat obj')
     console.log(obj)
@@ -138,6 +143,9 @@ const ShowChat = ({
         setRemoveChatBar={setRemoveChatBar}
         checkStatus={checkStatus}
         username={currShowUserName}
+        chatRoomID={sortedRoomId}
+        setChatList={setChatList}
+        socket={socket}
       ></ChatHeading>
       <ChatList username={currUser} list={chatList}></ChatList>
       <SendChat

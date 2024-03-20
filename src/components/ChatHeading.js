@@ -1,10 +1,54 @@
+import { useState, useEffect } from 'react'
+import { ChatOption } from './ChatOption'
 import Profile from './Profile'
+import axios from 'axios'
 const ChatHeading = ({
   removeChatBar,
   setRemoveChatBar,
-  checkStatus,
   username,
+  chatRoomID,
+  setChatList,
+  socket,
 }) => {
+  const [checkStatus, setCheckStatus] = useState(false)
+  useEffect(
+    () => {
+      if (socket)
+        socket.on('online-status', (resp) => {
+          if (resp.includes(username.email)) {
+            setCheckStatus(true)
+          } else {
+            setCheckStatus(false)
+          }
+        })
+    },
+    // console.log(socket)
+    [socket]
+  )
+  const [openOptions, setOpenOptions] = useState(false)
+  const handleChatDelete = async () => {
+    try {
+      if (window.confirm('Are you sure to delete your chats?')) {
+        await axios
+          .post(
+            `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/userChatDelete`,
+            {
+              username: username,
+              chatRoomID: chatRoomID,
+            },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((resp) => {
+            setOpenOptions(false)
+            setChatList([])
+          })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <>
       <header className='chatHeading'>
@@ -42,10 +86,39 @@ const ChatHeading = ({
           <div className='button btn2'>
             <i class='fa-solid fa-video'></i>
           </div>
-          <div className='button btn2'>
+          <div
+            className='button btn2'
+            onClick={(e) => {
+              if (openOptions === true) {
+                document
+                  .querySelector('.showOptions')
+                  .classList.add('showOptionsMotionRem')
+                setTimeout(() => {
+                  setOpenOptions(!openOptions)
+                }, 100)
+              } else {
+                setOpenOptions(!openOptions)
+              }
+            }}
+          >
             <i class='fa-solid fa-ellipsis'></i>
           </div>
         </div>
+        {openOptions && (
+          <div
+            className={
+              openOptions
+                ? 'showOptions showOptionsMotion'
+                : 'showOptions showOptionsMotionRem'
+            }
+          >
+            <ChatOption
+              category={'danger'}
+              data={'Delete all chats'}
+              func={handleChatDelete}
+            ></ChatOption>
+          </div>
+        )}
       </header>
     </>
   )
