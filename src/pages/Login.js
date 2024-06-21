@@ -12,19 +12,24 @@ export const Login = () => {
             <div className='lg'></div>
             <span>ChatNest</span>
           </div>
-          <h2 style={{ marginBottom: '25px', marginTop: '75px' }}>
+          <h2 style={{ marginBottom: '90px', marginTop: '10px' }}>
             {' '}
             Log in to your account
           </h2>
           <GoogleLogin
+            type='icon'
             size='large'
             shape='circle'
             onSuccess={(credentialResponse) => {
               let decode = jwtDecode(credentialResponse.credential)
               axios
-                .post(`${process.env.REACT_APP_LIVE_URL}/api/v1/login`, decode, {
-                  withCredentials: true,
-                })
+                .post(
+                  `${process.env.REACT_APP_LIVE_URL}/api/v1/login`,
+                  decode,
+                  {
+                    withCredentials: true,
+                  }
+                )
                 .then((resp) => {
                   window.location.href = `${process.env.REACT_APP_LIVE_CLIENT}/chats`
                 })
@@ -47,12 +52,10 @@ export const Login = () => {
               and a user-friendly interface, chatting has never been more
               convenient. Join us as we redefine the way you connect with
               friends, family, and colleagues. Welcome to a world of endless
-              conversations 
+              conversations
             </span>
             <br />
-            <span className='info'>
-              - ChatNest
-            </span>
+            <span className='info'>- ChatNest</span>
           </div>
         </div>
       </div>

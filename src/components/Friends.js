@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import Profile from './Profile'
 import axios from 'axios'
-
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 const Friends = ({
   currUserLogin,
   socket,
@@ -14,39 +15,89 @@ const Friends = ({
   selectFromFriends,
   getFromDetails,
 }) => {
-  const [checkStatus, setCheckStatus] = useState(false)
+  const [checkStatus, setCheckStatus] = useState('none')
+  const [lastEntry, setLastEntry] = useState('')
   const [countNewMessage, setCountNewMessage] = useState(0)
+  function findObjByProperty(array, prop, propval) {
+    return array.find(function (obj) {
+      return obj[prop] === propval
+    })
+  }
 
   useEffect(
     () => {
+      console.log('rerendering1')
       if (socket) {
         socket.on('online-status', (resp) => {
-          if (resp.includes(username)) {
-            setCheckStatus(true)
+          console.log(resp)
+          // if (resp.includes(username)) {
+          //   setCheckStatus(true)
+          // } else {
+          //   setCheckStatus(false)
+          // }
+          // console.log(resp)
+          let findVal = findObjByProperty(resp, 'data', username)
+          console.log(findVal)
+          if (findVal === undefined) {
+            setLastEntry('--')
+            setCheckStatus('offline')
+          } else if (
+            findVal &&
+            findVal.data === username &&
+            findVal.time === 'now'
+          ) {
+            setCheckStatus('online')
+            setLastEntry('now')
           } else {
-            setCheckStatus(false)
+            setCheckStatus('offline')
+            if (findVal && findVal.data === username) {
+              setLastEntry()
+              let dateToSubstract = new Date(findVal.time)
+              let currDate = new Date()
+              let substractedDate = currDate - dateToSubstract
+              let difftimemin = substractedDate / 1000 / 60
+              difftimemin = Math.floor(difftimemin)
+              if (difftimemin > 59) {
+                difftimemin /= 60
+                difftimemin = Math.floor(difftimemin)
+                if (difftimemin > 23) {
+                  difftimemin /= 24
+                  difftimemin = Math.floor(difftimemin)
+                  setLastEntry(difftimemin + ' days ago')
+                }
+                setLastEntry(difftimemin + ' hr ago')
+              } else {
+                setLastEntry(difftimemin + ' min ago')
+              }
+              console.log(findVal.time)
+            }
           }
         })
       }
     },
     // console.log(socket)
-    [socket]
+
+    [socket, username]
   )
   useEffect(() => {
-    if (socket)
-      socket.on('receive-msg', (resp) => {
-        console.log(resp)
-      })
-  }, [socket])
+    console.log('rerendering 2')
+    // setLastEntry("--")
+  }, [username])
+  // useEffect(() => {
+  //   if (socket)
+  //     socket.on('receive-msg', (resp) => {
+  //       console.log(resp)
+  //     })
+  // }, [socket, username])
 
   const [currInfo, setCurrInfo] = useState({})
   const [lastMsg, setLastMsg] = useState('')
-  const setLastMsgFunc = (msg) => {
+  const setLastMsgFunc = (msg, usname) => {
     setLastMsg(msg)
-    setCountNewMessage(countNewMessage + 1)
+    if (username !== usname) setCountNewMessage(countNewMessage + 1)
     console.log('setting last message')
   }
-  useEffect(async () => {
+  async function getOneUser() {
     await axios
       .post(
         `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getOneUser`,
@@ -60,8 +111,11 @@ const Friends = ({
       .then((resp) => {
         setCurrInfo(resp.data[0])
       })
-  }, [])
-  useEffect(async () => {
+  }
+  useEffect(() => {
+    getOneUser()
+  }, [username])
+  async function getLastChatFunc() {
     await axios
       .post(
         `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/getLastChat`,
@@ -78,7 +132,10 @@ const Friends = ({
         console.log(resp.data)
         setLastMsg(resp.data.text)
       })
-  }, [])
+  }
+  useEffect(() => {
+    getLastChatFunc()
+  }, [username])
   return (
     <>
       <div
@@ -102,7 +159,7 @@ const Friends = ({
             sender={currUserLogin}
             receiver={currInfo.email}
             pic={currInfo.picture}
-            backG={checkStatus === true ? '#34D859' : '#a2a2a2'}
+            backG={checkStatus === 'online' ? '#34D859' : '#a2a2a2'}
             bg={'#FAFAFA'}
             ht={'40px'}
             wt={'40px'}
@@ -110,10 +167,13 @@ const Friends = ({
           ></Profile>
           <div className='info'>
             <h5>{currInfo.fullName}</h5>
-            <span>{checkStatus === true ? 'Online' : 'Offline'}</span>
+            <span>
+              {checkStatus === 'none' ? <Skeleton /> : checkStatus}
+              {/* {checkStatus === true ? 'Online' : 'Offline'} */}
+            </span>
           </div>
           <div className='time'>
-            <span>3h ago</span>
+            <span>{lastEntry}</span>
           </div>
         </div>
         <div className='lower'>

@@ -5,6 +5,8 @@ export const ChatOption = ({category,data,func}) => {
   return (
     <span onClick={()=>{
      func()
-    }} className={category==="danger"?'codeDanger button':'button'} >{data}</span>
+    }} 
+    style={{margin:"10px 0px"}}
+    className={category==="danger"?'codeDanger button':'button'} >{data}</span>
   )
 }

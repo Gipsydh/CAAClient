@@ -1,6 +1,15 @@
 import Search from './Search'
 
-const SendChat = ({ func, handleOnchange, msg }) => {
+const SendChat = ({
+  func,
+  handleOnchange,
+  handleEmoji,
+  handleFileShare,
+  msg,
+  caretPosition,
+  openChatFlag, 
+  handleCaretPosition
+}) => {
   return (
     <>
       <div className='sendChat'>
@@ -9,8 +18,12 @@ const SendChat = ({ func, handleOnchange, msg }) => {
           text={'type a message here'}
           logo={'fa-solid fa-paperclip'}
           handleOnchange={handleOnchange}
+          handleEmoji={handleEmoji}
+          handleFileShare={handleFileShare}
           msg={msg}
           func={func}
+          openChatFlag={openChatFlag}
+          handleCaretPosition={handleCaretPosition}
         ></Search>
         <div className='sendBtn button' onClick={func}>
           <i class='fa-regular fa-paper-plane'></i>

@@ -10,9 +10,14 @@ const ShowChat = ({
   username,
   currShowUserName,
 }) => {
+  const [openChatFlag, setOpenChatFlag] = useState(false)
+  useEffect(() => {
+    setOpenChatFlag(removeChatBar)
+  }, [removeChatBar])
   const [chatList, setChatList] = useState([])
   const [currUser, setCurrUser] = useState('')
   const [sortedRoomId, setSortedRoomId] = useState('')
+  const [caretPosition, setCaretPosition] = useState(0)
   const [notificationPerm, setNotificationPerm] = useState(
     Notification.permission
   )
@@ -22,7 +27,8 @@ const ShowChat = ({
     return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
     })
-  }, [])
+  }, [username, currShowUserName])
+
   const getChatsFromDB = async () => {
     console.log('userToken:' + currRoomID.current)
     await axios
@@ -36,13 +42,17 @@ const ShowChat = ({
         }
       )
       .then((resp) => {
+        console.log(resp)
         for (let i = 0; i < resp.data.length; i++) {
+          console.log(resp.data[i])
           const obj = {
             msg: resp.data[i].text,
             status: resp.data[i].receiver !== username ? 'receiver' : 'sender',
             chatRoomID: resp.data[i].currRoomID,
             username: username,
             time: resp.data[i].time,
+            type:resp.data[i].type,
+            content:resp.data[i].content
           }
           setChatList((prevChatList) => [...prevChatList, obj])
         }
@@ -107,34 +117,109 @@ const ShowChat = ({
     //     }
     //   })
     // }
+
     setChatList([...chatList, { ...msg, time: 'Today' }])
   })
 
   const [msg, setMsg] = useState('')
+  const [file, setFile] = useState()
   const handleSubmit = (e) => {
-    if(msg==='')return;
+    if (msg === '') return
     e.preventDefault()
+    const formData = new FormData()
 
-    const obj = {
-      msg: msg,
-      status: 'sender',
-      username: username,
-      chatRoomID: currRoomID.current,
+    // Append the file to the FormData object
+
+    let obj = {}
+    if (file) {
+      formData.append('msg', file.name)
+      formData.append('content', file)
+      formData.append('status', 'sender')
+      formData.append('username', username)
+      formData.append('chatRoomID', currRoomID.current)
+      formData.append('mimeType', file.type)
+      formData.append('fileName', file.name)
+      formData.append('type',"image")
+      obj = {
+        msg: file.name,
+        content: file,
+        status: 'sender',
+        username: username,
+        chatRoomID: currRoomID.current,
+        mimeType: file.type,
+        fileName: file.name,
+      }
+    } else {
+      obj = {
+        msg: msg,
+        status: 'sender',
+        username: username,
+        chatRoomID: currRoomID.current,
+        type:'normal_text'
+      }
     }
-    axios.post(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, obj, {
-      withCredentials: true,
-    })
+
     socket.emit('message', { obj, target: currRoomID.current })
+    let fileReader = new FileReader()
+    // fileReader.onload=func
+    if (file) {
+      axios.post(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      })
+    } else {
+      axios.post(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, obj, {
+        withCredentials: true,
+      })
+    }
+    setChatList([...chatList, { ...obj, time: 'today' }])
     console.log('current chat obj')
-    console.log(obj)
-    setChatList((prevChatList) => [...chatList, { ...obj, time: 'today' }])
+    // if (file) {
+    //   obj = {
+    //     msg: file.name,
+    //     status: 'sender',
+    //     username: username,
+    //     chatRoomID: currRoomID.current,
+    //     mimeType: file.type,
+    //     fileName: file.name,
+
+    //   }
+    // }
+
     setMsg('')
+    setFile()
   }
   socket.on('onDisconnect', () => {
     setCheckStaus(false)
   })
   const handleOnchange = (e) => {
     setMsg(e.target.value)
+  }
+  const handleCaretPosition = (e) => {
+    setCaretPosition(e.target.selectionStart)
+  }
+  const caretRef = useRef(caretPosition)
+  const msgRef = useRef(msg)
+  useEffect(() => {
+    caretRef.current = caretPosition
+    msgRef.current = msg
+  }, [caretPosition, msg])
+  const handleEmoji = (data) => {
+    {
+      let lft = msgRef.current.substring(0, caretRef.current)
+      let rht = msgRef.current.substring(caretRef.current)
+      console.log(lft, rht)
+      setMsg(lft + data.emoji + rht)
+    }
+  }
+  const handleFileShare = (e) => {
+    console.log('file triggered')
+    if (e.target.files[0]) {
+      setMsg(e.target.files[0].name)
+      setFile(e.target.files[0])
+    }
   }
   return (
     <>
@@ -146,12 +231,18 @@ const ShowChat = ({
         chatRoomID={sortedRoomId}
         setChatList={setChatList}
         socket={socket}
+        openChatFlag={openChatFlag}
+        setOpenChatFlag={setOpenChatFlag}
       ></ChatHeading>
       <ChatList username={currUser} list={chatList}></ChatList>
       <SendChat
         func={handleSubmit}
         handleOnchange={handleOnchange}
+        handleEmoji={handleEmoji}
+        handleFileShare={handleFileShare}
         msg={msg}
+        openChatFlag={openChatFlag}
+        handleCaretPosition={handleCaretPosition}
       ></SendChat>
     </>
   )

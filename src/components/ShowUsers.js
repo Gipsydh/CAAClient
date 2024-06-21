@@ -3,21 +3,24 @@ import Profile from './Profile'
 import axios from 'axios'
 const ShowUsers = ({ user }) => {
   const [isFriend, setIsFriend] = useState(false)
+  const [sentReq, setSentReq] = useState(false)
   // console.log(user)
-  const sendRequest=async()=>{
-   await axios
-     .post(
-       `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/sendReq`,
-       {
-         username: user.email,
-       },
-       {
-         withCredentials: true,
-       }
-     )
-     .then((resp) => {})
+  const sendRequest = async () => {
+    await axios
+      .post(
+        `${process.env.REACT_APP_LIVE_URL}/api/v1/chats/sendReq`,
+        {
+          username: user.email,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((resp) => {
+        setSentReq(true)
+      })
   }
-  const getUsers=async () => {
+  const getUsers = async () => {
     {
       await axios
         .post(
@@ -69,12 +72,19 @@ const ShowUsers = ({ user }) => {
               <span>already your friend</span>
               <i className='fa-solid fa-check'></i>
             </>
+          ) : sentReq === true ? (
+            <>
+              <div>
+                <span>Friend request sent</span>
+                <i className='fa-solid fa-check'></i>
+              </div>
+            </>
           ) : (
-            <><div onClick={sendRequest}>
-
-              <span>Add to Friend</span>
-              <i className='fa-solid fa-user-plus'></i>
-            </div>
+            <>
+              <div onClick={sendRequest}>
+                <span>Add to Friend</span>
+                <i className='fa-solid fa-user-plus'></i>
+              </div>
             </>
           )}
         </div>

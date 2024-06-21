@@ -9,6 +9,14 @@ h2 {
 .container .left {
   width: 400px;
   padding: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  height: 350px;
+
+  background-color: red;
+  clip-path: polygon(50% 100%, 100% 68%, 100% 0, 0 0, 0 68%);
 }
 .container .right {
   width: calc(100% - 400px);
@@ -19,41 +27,41 @@ h2 {
   justify-content: flex-start;
   align-items: center;
 }
-.container .logo span{
- color: var(--text-primary-color);
- font-size: 30px;
- margin-left: 20px;
+.container .logo span {
+  color: var(--text-primary-color);
+  font-size: 30px;
+  margin-left: 20px;
 }
-.container .logo .lg{
- width: 40px;
- height: 80px;
- background-position: center;
- background-size: cover;
- background-image: url("../../public/resources/chat-log.png");
+.container .logo .lg {
+  width: 40px;
+  height: 80px;
+  background-position: center;
+  background-size: cover;
+  background-image: url('../../public/resources/chat-log.png');
 }
-.container .right{
- background-repeat:no-repeat ;
- background-position: center;
- position: relative;
- background-size: cover;
- background-image: url("../../public/resources/intro2.png");
+.container .right {
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  background-size: cover;
+  background-image: url('../../public/resources/intro2.png');
 }
-.right{
- padding: 150px 100px 60px 100px;
- display: flex;
- flex-direction: column;
- justify-content: space-between;
- align-items: flex-start;
+.right {
+  padding: 150px 100px 60px 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
 }
-.right span{
- font-size: 1.5vw;
+.right span {
+  font-size: 1.5vw;
 }
-.right .info{
- font-size: .9vw;
+.right .info {
+  font-size: 0.9vw;
 }
-.right h2{
- font-size: 5vw;
- color: white;
+.right h2 {
+  font-size: 5vw;
+  color: white;
 }
 /* .container .right::before{
  content: '';
@@ -64,8 +72,8 @@ h2 {
  height: 100%;
  backdrop-filter: blur(5px);
 } */
-@media all and (max-width:500px) {
- .right{
-  display: none;
- }
+@media all and (max-width: 500px) {
+  .right {
+    display: none;
+  }
 }

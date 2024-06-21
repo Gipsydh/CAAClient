@@ -8,6 +8,8 @@ import ShowChat from './ShowChat'
 import { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 const ChatBox = () => {
   const [identifier, setIdentifier] = useState(-1)
   const [width, setWidth] = useState(window.innerWidth)
@@ -42,12 +44,13 @@ const ChatBox = () => {
   }, [currUserLogin])
   const [currShowUser, setCurrShowUser] = useState('')
   const [currFrnds, setCurrFrnds] = useState([])
+  const [currSearchedFrnds, setCurrSearchedFrnds]=useState([])
   const [removeChatBar, setRemoveChatBar] = useState(false)
   const socket = useMemo(() => {
     return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
     })
-  }, [])
+  }, [currSearchedFrnds])
   const handleFunc1 = async () => {
     await axios
       .get(
@@ -62,6 +65,7 @@ const ChatBox = () => {
           setCurrFrnds([])
         } else {
           setCurrFrnds(resp.data.haveFrnds)
+          setCurrSearchedFrnds(resp.data.haveFrnds)
         }
       })
   }
@@ -70,9 +74,18 @@ const ChatBox = () => {
   }, [])
   const [findUsers, setFindUsers] = useState('')
   const handleOnChangeFindUsers = async (e) => {
-    setFindUsers(e.target.value)
+    console.log(e.target.value)
+    let newCurrFrnds = currFrnds.filter((element) =>
+      element.includes(e.target.value)
+    )
+    console.log(newCurrFrnds)
+  
+    setCurrSearchedFrnds(newCurrFrnds)
+    // console.log(newCurrFrnds)
   }
-  const func = (e) => {}
+  const func = (e) => {
+    console.log(e.target.value)
+  }
   useEffect(() => {
     socket.on('check-status', (m) => {})
   }, [])
@@ -82,8 +95,8 @@ const ChatBox = () => {
     }
     setCurrShowUser(username)
   }
-  const getFromDetails = (username, picture,email) => {
-    setCurrShowUserName({ username: username, picture: picture,email:email })
+  const getFromDetails = (username, picture, email) => {
+    setCurrShowUserName({ username: username, picture: picture, email: email })
   }
 
   return (
@@ -107,7 +120,10 @@ const ChatBox = () => {
             func={func}
           ></Search>
           <div className='allFriends'>
-            {currFrnds.map((val, i) => {
+            {
+            
+            currSearchedFrnds.map((val, i) => {
+              console.log(val)
               return (
                 <Friends
                   currUserLogin={currUserLogin.email}

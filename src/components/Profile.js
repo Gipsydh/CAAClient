@@ -11,7 +11,6 @@ const Profile = ({
   wt,
   setLastMsgFunc,
 }) => {
-  console.log(sender + receiver)
   // const socket = useMemo(() => {
   //   return io(process.env.REACT_APP_LIVE_URL, {
   //     withCredentials: true,
@@ -29,26 +28,15 @@ const Profile = ({
   useEffect(() => {
     if (socket) {
       getRoomIDKEY()
-      console.log(res)
       setCurrChatRoomID(res)
-      console.log('entering')
       socket.emit('enter', { res: res })
-      console.log(currChatRoomID)
     }
   }, [receiver])
-  useEffect(() => {
-    console.log('receiving')
-    
-  }, [socket])
+  useEffect(() => {}, [socket])
   if (socket) {
     socket.on('receive-msg', (resp) => {
-      console.log(currChatRoomID)
-      console.log(resp.chatRoomID)
-
       if (currChatRoomID === resp.chatRoomID) {
-        console.log('hitting')
-
-        setLastMsgFunc(resp.msg)
+        setLastMsgFunc(resp.msg, resp.username)
       }
     })
   }
@@ -63,6 +51,9 @@ const Profile = ({
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
           backgroundSize: 'contain',
+        }}
+        onClick={() => {
+          console.log(pic)
         }}
       >
         <div
