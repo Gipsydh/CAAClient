@@ -1,6 +1,7 @@
 import ChatHeading from './ChatHeading'
 import SendChat from './SendChat'
 import ChatList from './ChatList'
+import Popup from './Popup'
 import { useEffect, useState, useMemo, useRef } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
@@ -9,15 +10,19 @@ const ShowChat = ({
   setRemoveChatBar,
   username,
   currShowUserName,
+  chatRoomKey
 }) => {
   const [openChatFlag, setOpenChatFlag] = useState(false)
   useEffect(() => {
     setOpenChatFlag(removeChatBar)
   }, [removeChatBar])
   const [chatList, setChatList] = useState([])
+  const [errorFiletype, setErrorFiletype] = useState(false)
+
   const [currUser, setCurrUser] = useState('')
   const [sortedRoomId, setSortedRoomId] = useState('')
   const [caretPosition, setCaretPosition] = useState(0)
+  
   const [notificationPerm, setNotificationPerm] = useState(
     Notification.permission
   )
@@ -51,8 +56,8 @@ const ShowChat = ({
             chatRoomID: resp.data[i].currRoomID,
             username: username,
             time: resp.data[i].time,
-            type:resp.data[i].type,
-            content:resp.data[i].content
+            type: resp.data[i].type,
+            content: resp.data[i].content,
           }
           setChatList((prevChatList) => [...prevChatList, obj])
         }
@@ -60,6 +65,7 @@ const ShowChat = ({
   }
   useEffect(() => {
     setChatList([])
+    setErrorFiletype(false)
   }, [username])
   useEffect(() => {
     socket.on('connect', () => {
@@ -120,7 +126,17 @@ const ShowChat = ({
 
     setChatList([...chatList, { ...msg, time: 'Today' }])
   })
-
+  function isValidImageType(file) {
+    const validImageTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+    ]
+    console.log(file.type)
+    return validImageTypes.includes(file.type)
+  }
   const [msg, setMsg] = useState('')
   const [file, setFile] = useState()
   const handleSubmit = (e) => {
@@ -139,7 +155,7 @@ const ShowChat = ({
       formData.append('chatRoomID', currRoomID.current)
       formData.append('mimeType', file.type)
       formData.append('fileName', file.name)
-      formData.append('type',"image")
+      formData.append('type', 'image')
       obj = {
         msg: file.name,
         content: file,
@@ -155,7 +171,7 @@ const ShowChat = ({
         status: 'sender',
         username: username,
         chatRoomID: currRoomID.current,
-        type:'normal_text'
+        type: 'normal_text',
       }
     }
 
@@ -217,9 +233,24 @@ const ShowChat = ({
   const handleFileShare = (e) => {
     console.log('file triggered')
     if (e.target.files[0]) {
-      setMsg(e.target.files[0].name)
-      setFile(e.target.files[0])
+      if (
+        e.target.files[0].size > Math.pow(2, 20) ||
+        !isValidImageType(e.target.files[0])
+      ) {
+        console.log('greter size')
+        setErrorFiletype(true)
+        setMsg('')
+        setFile()
+        return
+      } else {
+        setMsg(e.target.files[0].name)
+        setFile(e.target.files[0])
+      }
     }
+  }
+  const closePopUp = () => {
+    console.log('closepopup called')
+    setErrorFiletype(false)
   }
   return (
     <>
@@ -233,8 +264,24 @@ const ShowChat = ({
         socket={socket}
         openChatFlag={openChatFlag}
         setOpenChatFlag={setOpenChatFlag}
+        handlePopup={closePopUp}
       ></ChatHeading>
-      <ChatList username={currUser} list={chatList}></ChatList>
+      <ChatList
+        chatRoomKey={chatRoomKey}
+        username={currUser}
+        list={chatList}
+      ></ChatList>
+      {errorFiletype && (
+        <Popup
+          handlePopup={closePopUp}
+          width={30}
+          left={80}
+          bottom={80}
+          message={`The file share feature currently supports only image files under 1MB. Future updates will expand file type support.`}
+          type={'attension'}
+        ></Popup>
+      )}
+
       <SendChat
         func={handleSubmit}
         handleOnchange={handleOnchange}

@@ -4,6 +4,7 @@ import axios from 'axios'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 const Friends = ({
+  key,
   currUserLogin,
   socket,
   io,
@@ -14,6 +15,7 @@ const Friends = ({
   setIdentifier,
   selectFromFriends,
   getFromDetails,
+  setCurrKey
 }) => {
   const [checkStatus, setCheckStatus] = useState('none')
   const [lastEntry, setLastEntry] = useState('')
@@ -141,10 +143,12 @@ const Friends = ({
       <div
         className={identifier === currIden ? `friends effect` : `friends`}
         onClick={() => {
+          console.log("viewing key",currIden)
           setCountNewMessage(0)
           selectFromFriends(username)
           getFromDetails(currInfo.fullName, currInfo.picture, currInfo.email)
           setIdentifier(currIden)
+          setCurrKey(currIden)
         }}
       >
         <div

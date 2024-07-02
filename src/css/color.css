@@ -14,8 +14,14 @@
  --button2-color:#a2a2a2;
  --chatColor-left:#44D7B6;
  --primary-font:"Mukta";
- --friend-background:#FFFFFF
- 
+ --friend-background:#FFFFFF;
+ --chatList-background:#FFFFFF;
+ --chatHeading-background:#FFFFFF;
+ --chats-background:#FFFFFF;
+ --chatRight-color:#ffffff;
+ --shadow-frnd-color:#d1d1d1;
+ --shadow-msg-color1:#ededed;
+ --shadow-msg-color2:#ffffff;
 }
 h3{
  font: var(--text-font-primary);

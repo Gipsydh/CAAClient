@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ChatOption } from './ChatOption'
+import themeColors from '../data/themes.json'
 import Profile from './Profile'
 import axios from 'axios'
 import Skeleton from 'react-loading-skeleton'
@@ -13,9 +14,15 @@ const ChatHeading = ({
   socket,
   openChatFlag,
   setOpenChatFlag,
+  handlePopup,
 }) => {
   const [checkStatus, setCheckStatus] = useState('none')
   const [lastEntry, setLastEntry] = useState()
+  const [openOptions, setOpenOptions] = useState(false)
+  const [themeFlag,setThemeFlag]=useState(false)
+  useEffect(() => {
+    setOpenOptions(false)
+  }, [username])
   // useEffect(() => {
   //   setCheckStatus('none')
   // }, [username])
@@ -77,7 +84,17 @@ const ChatHeading = ({
     // console.log(socket)
     [socket, username]
   )
-  const [openOptions, setOpenOptions] = useState(false)
+  const updateCSSVariables = (variables) => {
+    console.log(variables)
+    for (const [key, value] of Object.entries(variables)) {
+      document.documentElement.style.setProperty(key, value)
+    }
+    setThemeFlag(false)
+  }
+  const handleThemeColor = () => {
+    console.log("check")
+    setThemeFlag(true)
+  }
   const handleChatDelete = async () => {
     try {
       if (window.confirm('Are you sure to delete your chats?')) {
@@ -118,12 +135,49 @@ const ChatHeading = ({
   }
   return (
     <>
+      {themeFlag ? (
+        <div className='overlayTheme'>
+          <div className='chooseTheme'>
+          <div className='closeBtn'>
+            <i class='fa-solid fa-xmark' onClick={()=>setThemeFlag(false)}></i>
+          </div>
+            <div className='heading'>
+              <h3>Themes</h3>
+            </div>
+            <div className='options'>
+              {themeColors.map((val, i) => {
+                return (
+                  <div
+                    className='cardColor'
+                    onClick={() => updateCSSVariables(val.colorSets)}
+                  >
+                    <div className='preview'>
+                      <div
+                        className='upper'
+                        style={{ backgroundColor: val.viewUp }}
+                      ></div>
+                      <div
+                        className='lower'
+                        style={{ backgroundColor: val.viewDown }}
+                      ></div>
+                    </div>
+                    <span>{val.name}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
       <header className='chatHeading'>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div
             className='backBtn button'
             onClick={() => {
               setRemoveChatBar(!removeChatBar)
+              handlePopup()
             }}
           >
             <i class='fa-solid fa-angle-left'></i>
@@ -186,12 +240,17 @@ const ChatHeading = ({
             }
           >
             <ChatOption
-              category={'danger'}
+              category={'codeGeneral'}
+              data={'Themes'}
+              func={handleThemeColor}
+            ></ChatOption>
+            <ChatOption
+              category={'codeDanger'}
               data={'Delete all chats'}
               func={handleChatDelete}
             ></ChatOption>
             <ChatOption
-              category={'danger'}
+              category={'codeDanger'}
               data={'Unfriend this user'}
               func={handleUnfriend}
             ></ChatOption>

@@ -1,14 +1,50 @@
 import { useRef, useEffect, useState } from 'react'
 import axios from 'axios'
-const ChatList = ({ username, list }) => {
+const ChatList = ({ chatRoomKey, username, list }) => {
+  const goToLastBtn=useRef(null)
   useEffect(() => {
-    const scrollList = document.querySelector('.chatList')
-    scrollList.scrollTop = scrollList.scrollHeight
-  }, [list])
+    // scrollList.scrollTop = scrollList.scrollHeight
+    setTimeout(() => {
+      const scrollList = document.querySelector('.chatList')
+      scrollList.scrollTop = scrollList.scrollHeight
+      console.log(scrollList.scrollHeight)
+    }, 50)
+  }, [chatRoomKey,username,list])
   const [imgSrc, setImgSrc] = useState('')
 
+  useEffect(() => {
+    let contentDiv = document.querySelector('.chatList')
+    function toggleGoDownFunc() {
+      let contentDiv = document.querySelector('.chatList')
+      let goToBottomBtn = document.querySelector(`.goToLast${chatRoomKey}`)
+      
+      if (
+        contentDiv.scrollTop + 10 <
+        contentDiv.scrollHeight - contentDiv.clientHeight
+      ) {
+        goToBottomBtn.style.display = 'flex'
+      } else {
+        goToBottomBtn.style.display = 'none'
+      }
+    }
+    
+    contentDiv.addEventListener('scroll', toggleGoDownFunc)
+    return () => {
+      contentDiv.removeEventListener('scroll', toggleGoDownFunc)
+    }
+  }, [chatRoomKey])
+  const goDownFunc = () => {
+    const scrollList = document.querySelector('.chatList')
+
+    scrollList.scrollTop = scrollList.scrollHeight
+
+  }
+ 
   return (
     <div className='chatList'>
+      <div className={`goToLast goToLast${chatRoomKey}`} style={{zIndex:10}} ref={goToLastBtn} onClick={goDownFunc}>
+        <i class='fa-solid fa-arrow-down'></i>
+      </div>
       {list.map((val, key) => {
         let dateFormat = ''
         if (val.time !== 'Today') {

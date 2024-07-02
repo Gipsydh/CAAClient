@@ -46,6 +46,11 @@ const ChatBox = () => {
   const [currFrnds, setCurrFrnds] = useState([])
   const [currSearchedFrnds, setCurrSearchedFrnds]=useState([])
   const [removeChatBar, setRemoveChatBar] = useState(false)
+  const [chatRoomKey, setCurrChatRoomKey] = useState()
+  const setCurrKey = (key) => {
+    console.log("setting key",key)
+    setCurrChatRoomKey(key)
+  }
   const socket = useMemo(() => {
     return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
@@ -136,6 +141,7 @@ const ChatBox = () => {
                   setIdentifier={setIdentifier}
                   selectFromFriends={selectFromFriends}
                   getFromDetails={getFromDetails}
+                  setCurrKey={setCurrKey}
                 ></Friends>
               )
             })}
@@ -169,6 +175,7 @@ const ChatBox = () => {
               setRemoveChatBar={setRemoveChatBar}
               username={currShowUser}
               currShowUserName={currShowUserName}
+              chatRoomKey={chatRoomKey}
             ></ShowChat>
           )}
         </section>

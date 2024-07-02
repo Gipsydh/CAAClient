@@ -1,23 +1,70 @@
-*{
- margin: 0;
- padding: 0;
- box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.button{
- cursor: pointer;
+.button {
+  cursor: pointer;
 }
 
-.btn1{
- color:  var(--button1-color);
+.btn1 {
+  color: var(--button1-color);
 }
-.btn2{
- color: var(--button2-color);
+.btn2 {
+  color: var(--button2-color);
 }
-.btn1 i{
+.btn1 i {
+  font-size: 20px;
+}
+h2 {
+  font-size: 30px;
+  font-family: 'Mukta';
+  color: var(--chatBar-color);
+}
+.popUpGeneral {
+  z-index: 10000;
+  position: absolute;
+  padding: 15px 30px;
+  background-color: var(--chatColor-left);
+  border-bottom-right-radius: 30px;
+  border-top-right-radius: 30px;
+  border-top-left-radius: 30px;
+}
+.popUpGeneral span {
+  color: white;
+}
+.popUpGeneral h2 {
+  color: white;
+}
+.popUpGeneral {
+  width: 400px;
+}
+.popUpGeneral .closeBtn {
  font-size: 20px;
+  position: absolute;
+  top: -19px;
+  right: -21px;
+  padding: 30px;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+  border-radius: 50%;
+  cursor: pointer;
 }
-h2{
- font-size: 30px;
- font-family: "Mukta";
- color:var(--chatBar-color);
+
+@media all and (max-width:900px) {
+ .popUpGeneral span{
+  font-size: 10px;
+  line-height: 1px;
+ }
+ .popUpGeneral{
+  padding: 20px;
+  width: 60%;
+ }
+ .popUpGeneral h2{
+  font-size: 20px;
+ }
 }
