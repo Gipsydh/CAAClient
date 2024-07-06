@@ -805,6 +805,18 @@
   }
 }
 @media all and (max-width: 900px) {
+  .videoCall{
+    width: 90%;
+    height: 90%;
+    padding: 7px;
+  }
+  .videoCall .videoFeedback {
+    height: 85%;
+  }
+  .videoCall .controls{
+    height: 15%;
+  }
+  
   .overlayTheme .chooseTheme {
     width: 80%;
     z-index: 1000;
