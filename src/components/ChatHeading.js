@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ChatOption } from './ChatOption'
 import themeColors from '../data/themes.json'
+import Peer from 'simple-peer'
+// import { call, getVideoRefs, answerCall } from '../helper_functions/handleVideo'
 import Profile from './Profile'
 import axios from 'axios'
 import Skeleton from 'react-loading-skeleton'
@@ -16,10 +18,104 @@ const ChatHeading = ({
   setOpenChatFlag,
   handlePopup,
 }) => {
+  const localVideoRef = useRef(null)
+  const remoteVideoRef = useRef(null)
+
   const [checkStatus, setCheckStatus] = useState('none')
   const [lastEntry, setLastEntry] = useState()
   const [openOptions, setOpenOptions] = useState(false)
-  const [themeFlag,setThemeFlag]=useState(false)
+  const [themeFlag, setThemeFlag] = useState(false)
+  const [videoWindow, setVideoWindow] = useState(false)
+  const [stream, setStream] = useState()
+  const [call, setCall] = useState({})
+  const [incomingVideoCaller, setIncomingVideoCaller] = useState(false)
+  const openVideoWindow = () => {
+    setVideoWindow(true)
+    callUser()
+  }
+  const closeVideoWindow = () => {
+    setVideoWindow(false)
+  }
+  // const getUserMedia = async () => {
+  //   try {
+  //     await navigator.mediaDevices
+  //       .getUserMedia({ video: true })
+  //       .then((currentStream) => {
+  //         if (localVideoRef.current){
+  //           console.log("going to set")
+  //           console.log(currentStream)
+  //           setStream(currentStream)
+  //           localVideoRef.current.srcObject = currentStream
+  //         }
+  //       })
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
+
+  // socket.on('callUser', ({ from, name: callerName, signal }) => {
+  //   setCall({ isReceivingCall: true, from, name: callerName, signal })
+  // })
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((currentStream) => {
+        console.log(currentStream)
+        setStream(currentStream)
+        if(localVideoRef.current)
+        localVideoRef.current.srcObject = currentStream
+      }).catch((error)=>{
+        console.log(error)
+      })
+
+
+    socket.on('sendcallingsignal', (signal) => {
+      console.log(signal)
+      setIncomingVideoCaller(true)
+      setCall({ isReceivingCall: true, signal })
+    })
+  }, [])
+  const callUser = async () => {
+    console.log(stream)
+    const peer = new Peer({ initiator: true, trickle: false, stream })
+
+    peer.on('signal', (data) => {
+      socket.emit('sendcallingsignal', { data, chatRoomID })
+    })
+
+    peer.on('stream', (currentStream) => {
+      remoteVideoRef.current.srcObject = currentStream
+    })
+
+    socket.on('callaccepted', (signal) => {
+      // setCallAccepted(true)
+      console.log("call received")
+      peer.signal(signal)
+    })
+
+    // connectionRef.current = peer
+  }
+  const answerCall = async () => {
+    setIncomingVideoCaller(false)
+    console.log('answering call')
+       
+     
+    console.log(stream)
+    const peer = new Peer({ initiator: false, trickle: false, stream })
+    console.log(peer)
+    peer.on('signal', (data) => {
+      console.log(data)
+      socket.emit('answercall', { signal: data ,chatRoomID})
+    })
+     peer.on('stream', (currentStream) => {
+       remoteVideoRef.current.srcObject = currentStream
+     })
+     peer.signal(call.signal.data)
+  }
+
+  // useEffect(() => {
+  //   getVideoRefs(localVideoRef, remoteVideoRef)
+  // }, [localVideoRef, remoteVideoRef])
   useEffect(() => {
     setOpenOptions(false)
   }, [username])
@@ -92,7 +188,7 @@ const ChatHeading = ({
     setThemeFlag(false)
   }
   const handleThemeColor = () => {
-    console.log("check")
+    console.log('check')
     setThemeFlag(true)
   }
   const handleChatDelete = async () => {
@@ -133,14 +229,18 @@ const ChatHeading = ({
       }
     } catch (error) {}
   }
+
   return (
     <>
       {themeFlag ? (
         <div className='overlayTheme'>
           <div className='chooseTheme'>
-          <div className='closeBtn'>
-            <i class='fa-solid fa-xmark' onClick={()=>setThemeFlag(false)}></i>
-          </div>
+            <div className='closeBtn'>
+              <i
+                class='fa-solid fa-xmark'
+                onClick={() => setThemeFlag(false)}
+              ></i>
+            </div>
             <div className='heading'>
               <h3>Themes</h3>
             </div>
@@ -207,11 +307,101 @@ const ChatHeading = ({
           </div>
         </div>
         <div className='options'>
+          {incomingVideoCaller ? (
+            <div className='incomingVideocall'>
+              <div style={{ display: 'flex' }}>
+                <div className='userImg'></div>
+                <div className='info'>
+                  <span>incoming video call</span>
+                  <h3>Name</h3>
+                </div>
+              </div>
+              <div className='controls'>
+                <div
+                  className='answer button'
+                  onClick={() => {
+                    setVideoWindow(true)
+                    answerCall()
+                    // getVideoRefs(localVideoRef, remoteVideoRef)
+                    // answerCall(socket, chatRoomID)
+                  }}
+                >
+                  <i class='fa-solid fa-phone'></i>
+                </div>
+                <div
+                  className='reject button'
+                  onClick={() => {
+                    setIncomingVideoCaller(false)
+                  }}
+                >
+                  <i
+                    class='fa-solid fa-phone'
+                    style={{ transform: 'rotate(136deg)' }}
+                  ></i>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+          {videoWindow ? (
+            <>
+              <div className='videoCall'>
+                <div className='videoFeedback'>
+                  {/* {<div
+                    className='pendingCall'
+                    style={{ backgroundImage: `url(${username.picture})` }}
+                  >
+                    <div
+                      className='profile'
+                      style={{ backgroundImage: 'inherit' }}
+                    ></div>
+                    <span>Calling to...</span>
+                    <h3>{username.username}</h3>
+                  </div>} */}
+                  <video
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                      position: 'absolute',
+                      top: '0px',
+                      left: '0px',
+                    }}
+                    playsInline
+                    autoPlay
+                    ref={remoteVideoRef}
+                  ></video>
+                  <div className='localFeedback'>
+                    <video
+                      playsInline
+                      autoPlay
+                      style={{ height: '100%', width: '100%' }}
+                      ref={localVideoRef}
+                    ></video>
+                  </div>
+                </div>
+                <div className='controls'>
+                  <div className='button ordinary'>
+                    <i class='fa-solid fa-volume-xmark'></i>
+                  </div>
+                  <div className='button danger' onClick={closeVideoWindow}>
+                    <span>End Call</span>
+                  </div>
+                  <div className='button ordinary'>
+                    <i class='fa-solid fa-video-slash'></i>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
           <div className='button btn2' title='Coming soon'>
             <i class='fa-solid fa-phone'></i>
           </div>
           <div className='button btn2' title='Coming soon'>
-            <i class='fa-solid fa-video'></i>
+            <i class='fa-solid fa-video' onClick={openVideoWindow}></i>
           </div>
           <div
             className='button btn2'
