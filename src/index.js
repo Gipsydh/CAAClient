@@ -2,7 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import * as process from 'process'
 
+if (typeof window !== 'undefined') {
+  window.global = window
+  window.process = require('process')
+  window.Buffer = []
+}
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <App />

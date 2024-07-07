@@ -805,6 +805,10 @@
   }
 }
 @media all and (max-width: 900px) {
+  .videoCall .localFeedback{
+    width: 130px;
+    height: 80px;
+  }
   .videoCall{
     width: 90%;
     height: 90%;
