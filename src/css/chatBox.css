@@ -651,9 +651,8 @@
   height: 85%;
   width: 60%;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 7.5%;
+  left: 20%;
   box-shadow: 0px 0px 47px 10px rgba(0, 0, 0, 0.234);
   padding: 20px 20px 0 20px;
 }
@@ -689,12 +688,12 @@
   align-items: center;
   flex-direction: column;
 }
-.videoCall .videoFeedback .pendingCall span{
+.videoCall .videoFeedback .pendingCall span {
   z-index: 3;
   margin-top: 50px;
   line-height: 1px;
 }
-.videoCall .videoFeedback .pendingCall h3{
+.videoCall .videoFeedback .pendingCall h3 {
   z-index: 3;
   font-size: 30px;
   color: white;
@@ -724,7 +723,7 @@
   background-color: var(--inputBar-color);
   border-radius: 30px;
 }
-.videoCall .localFeedback{
+.videoCall .localFeedback {
   height: 150px;
   width: 250px;
   background-color: black;
@@ -736,7 +735,6 @@
 }
 .videoCall .controls .button i {
   color: var(--button2-color);
-  
 }
 .videoCall .controls .danger {
   width: 150px;
@@ -746,9 +744,9 @@
   color: white;
   font-size: 1.2rem;
 }
-.incomingVideocall{
-  z-index: 21;
-  width: 400px;
+.incomingVideocall {
+  z-index: 1001;
+  width: 550px;
   height: 80px;
   background-color: var(--sidebar-color);
   position: fixed;
@@ -760,41 +758,65 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 }
-.incomingVideocall .userImg{
+.incomingVideocall::before {
+  content: '';
+  width: 40%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: -50%;
+  background: linear-gradient(
+    66deg,
+    rgba(87, 126, 202, 0) 29%,
+    rgba(255, 255, 255, 0.3) 53%,
+    rgba(0, 35, 136, 0) 84%
+  );
+  animation: flashingIncomingCall 3s infinite;
+}
+@keyframes flashingIncomingCall {
+  from {
+    left: -50%;
+  }
+  to {
+    left: 120%;
+  }
+}
+.incomingVideocall .userImg {
   border-radius: 50%;
   margin-right: 20px;
   height: 60px;
   width: 60px;
-  background-color: pink;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-.incomingVideocall .info{
+.incomingVideocall .info {
   line-height: 10px;
-    margin: auto;
+  margin: auto;
 }
-.incomingVideocall .info h3{
+.incomingVideocall .info h3 {
   color: white;
 }
-.incomingVideocall .controls{
+.incomingVideocall .controls {
   display: flex;
-
- 
 }
-.incomingVideocall .controls i{
-  color:white;
-
+.incomingVideocall .controls i {
+  color: white;
 }
-.incomingVideocall .controls .answer{
+.incomingVideocall .controls .answer {
   background-color: green;
 }
-.incomingVideocall .controls .reject{
+.incomingVideocall .controls .reject {
   background-color: red;
 }
-.incomingVideocall .controls .button{
+.incomingVideocall .controls .button {
   margin-left: 15px;
   display: flex;
-   justify-content: center;
-  align-items: center;  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
   height: 60px;
   width: 60px;
 }
@@ -805,11 +827,28 @@
   }
 }
 @media all and (max-width: 900px) {
-  .videoCall .localFeedback{
+  .incomingVideocall {
+    width: 90%;
+    border-radius: 10px;
+    padding: 0 20px;
+    border-radius: 38px;
+  }
+  .incomingVideocall .controls .button,
+  .incomingVideocall .userImg {
+    height: 40px;
+    width: 40px;
+  }
+  .incomingVideocall h3 {
+    font-size: 17px;
+  }
+  .incomingVideocall span {
+    font-size: 13px;
+  }
+  .videoCall .localFeedback {
     width: 130px;
     height: 80px;
   }
-  .videoCall{
+  .videoCall {
     width: 90%;
     height: 90%;
     padding: 7px;
@@ -817,10 +856,10 @@
   .videoCall .videoFeedback {
     height: 85%;
   }
-  .videoCall .controls{
+  .videoCall .controls {
     height: 15%;
   }
-  
+
   .overlayTheme .chooseTheme {
     width: 80%;
     z-index: 1000;

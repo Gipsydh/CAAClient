@@ -1,43 +1,35 @@
 import { useState, useEffect, useRef } from 'react'
 import { ChatOption } from './ChatOption'
 import themeColors from '../data/themes.json'
-import Peer from 'simple-peer'
+import { motion, useAnimate, usePresence } from 'framer-motion'
 // import { call, getVideoRefs, answerCall } from '../helper_functions/handleVideo'
 import Profile from './Profile'
 import axios from 'axios'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import { io } from 'socket.io-client'
+import { useMemo } from 'react'
 const ChatHeading = ({
   removeChatBar,
   setRemoveChatBar,
   username,
   chatRoomID,
   setChatList,
-  socket,
+
   openChatFlag,
   setOpenChatFlag,
   handlePopup,
+  setRequestCall,
 }) => {
-  const localVideoRef = useRef(null)
-  const remoteVideoRef = useRef(null)
-  const connectionRef = useRef(null)
-  const [callState, setCallState] = useState('calling to...')
   const [checkStatus, setCheckStatus] = useState('none')
   const [lastEntry, setLastEntry] = useState()
   const [openOptions, setOpenOptions] = useState(false)
   const [themeFlag, setThemeFlag] = useState(false)
-  const [videoWindow, setVideoWindow] = useState(false)
-  const [stream, setStream] = useState()
-  const [call, setCall] = useState({})
-  const [pendingCall, setPendingCall] = useState(true)
-  const [incomingVideoCaller, setIncomingVideoCaller] = useState(false)
-  const openVideoWindow = () => {
-    setVideoWindow(true)
-    callUser()
-  }
-  const closeVideoWindow = () => {
-    setVideoWindow(false)
-  }
+  const socket = useMemo(() => {
+    return io(process.env.REACT_APP_LIVE_URL, {
+      withCredentials: true,
+    })
+  }, [username])
   // const getUserMedia = async () => {
   //   try {
   //     await navigator.mediaDevices
@@ -58,136 +50,6 @@ const ChatHeading = ({
   // socket.on('callUser', ({ from, name: callerName, signal }) => {
   //   setCall({ isReceivingCall: true, from, name: callerName, signal })
   // })
-  socket.on('sendcallingsignal', (signal) => {
-    console.log(signal)
-    // console.log(localVideoRef)
-    setIncomingVideoCaller(true)
-    setCall({ isReceivingCall: true, signal })
-  })
-
-  const makeStream = async () => {
-    const currStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    })
-    console.log(currStream)
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = currStream
-      setStream(currStream)
-    }
-    return currStream
-  }
-  const callUser = async () => {
-    try {
-      const currStream = await makeStream()
-      setStream(currStream)
-      const peer = new Peer({
-        initiator: true,
-        trickle: false,
-        stream: currStream,
-      })
-
-      peer.on('signal', (data) => {
-        socket.emit('sendcallingsignal', { data, chatRoomID })
-      })
-
-      peer.on('stream', (currentStream) => {
-        remoteVideoRef.current.srcObject = currentStream
-      })
-
-      socket.on('callaccepted', (signal) => {
-        // setCallAccepted(true)
-        console.log(signal)
-        if (peer && !peer.destroyed) {
-          peer.signal(signal)
-          setPendingCall(false)
-        } else {
-          console.error('Peer is destroyed or not created, cannot signal.')
-        }
-      })
-      peer.on('error', (e) => {
-        console.log(e)
-        setPendingCall(true)
-        setCallState('Some error happened :(')
-      })
-      console.log(connectionRef.current)
-      connectionRef.current = peer
-    } catch (error) {
-      console.log('error happened')
-    }
-  }
-  const answerCall = async () => {
-    try {
-      await makeStream().then((currStream) => {
-        setIncomingVideoCaller(false)
-        console.log('answering call')
-
-        const peer = new Peer({
-          initiator: false,
-          trickle: false,
-          stream: currStream,
-        })
-        console.log(peer)
-        peer.on('signal', (data) => {
-          console.log(data)
-          socket.emit('answercall', { signal: data, chatRoomID })
-        })
-        peer.on('stream', (currentStream) => {
-          console.log('call received')
-          remoteVideoRef.current.srcObject = currentStream
-          setPendingCall(false)
-        })
-        peer.on('error', (e) => {
-          console.log(e)
-          setPendingCall(true)
-          setCallState('Some error happened :(')
-        })
-        peer.signal(call.signal.data)
-        connectionRef.current = peer
-      })
-    } catch (error) {
-      console.log('error happened')
-    }
-  }
-  socket.on('closeconnection', () => {
-    console.log('Server requested to close connection')
-    try {
-      if (connectionRef.current) {
-        setVideoWindow(false)
-        setPendingCall(true)
-        connectionRef.current.destroy()
-        connectionRef.current = null
-      }
-    } catch (e) {
-      console.error('Error closing connection:', e)
-    }
-  })
-  const leaveCall = () => {
-    // stream.getTracks().forEach((track) => {
-    //   track.stop()
-    // })
-
-    // console.log(connectionRef.current)
-    setPendingCall(true)
-    setCallState('Calling to...')
-
-    if (localVideoRef.current && localVideoRef.current.srcObject) {
-      localVideoRef.current.srcObject
-        .getTracks()
-        .forEach((track) => track.stop())
-      localVideoRef.current.srcObject = null
-    }
-
-    // Destroy peer connection
-    if (connectionRef.current) {
-      connectionRef.current.destroy()
-      connectionRef.current = null
-    }
-
-    setStream(null)
-    // Optionally, you can notify the server
-    socket.emit('closeconnection', { chatRoomID })
-  }
 
   // useEffect(() => {
   //   getVideoRefs(localVideoRef, remoteVideoRef)
@@ -203,6 +65,13 @@ const ChatHeading = ({
       return obj[prop] === propval
     })
   }
+  useEffect(() => {
+    setRequestCall({
+      isCall: false,
+      username: username,
+      chatRoomID: chatRoomID,
+    })
+  }, [])
   useEffect(
     () => {
       console.log('again rendering')
@@ -256,6 +125,7 @@ const ChatHeading = ({
     // console.log(socket)
     [socket, username]
   )
+
   const updateCSSVariables = (variables) => {
     console.log(variables)
     for (const [key, value] of Object.entries(variables)) {
@@ -305,12 +175,16 @@ const ChatHeading = ({
       }
     } catch (error) {}
   }
-
+  
   return (
     <>
       {themeFlag ? (
         <div className='overlayTheme'>
-          <div className='chooseTheme'>
+          <motion.div
+            className='chooseTheme'
+            initial={{ scale: 0.5 ,opacity:0}}
+            animate={{ scale: 1 ,opacity:1}}
+          >
             <div className='closeBtn'>
               <i
                 class='fa-solid fa-xmark'
@@ -342,7 +216,7 @@ const ChatHeading = ({
                 )
               })}
             </div>
-          </div>
+          </motion.div>
         </div>
       ) : (
         <></>
@@ -383,115 +257,23 @@ const ChatHeading = ({
           </div>
         </div>
         <div className='options'>
-          {incomingVideoCaller ? (
-            <div className='incomingVideocall'>
-              <div style={{ display: 'flex' }}>
-                <div className='userImg'></div>
-                <div className='info'>
-                  <span>incoming video call</span>
-                  <h3>Name</h3>
-                </div>
-              </div>
-              <div className='controls'>
-                <div
-                  className='answer button'
-                  onClick={() => {
-                    setVideoWindow(true)
-                    answerCall()
-                    // getVideoRefs(localVideoRef, remoteVideoRef)
-                    // answerCall(socket, chatRoomID)
-                  }}
-                >
-                  <i class='fa-solid fa-phone'></i>
-                </div>
-                <div
-                  className='reject button'
-                  onClick={() => {
-                    setIncomingVideoCaller(false)
-                  }}
-                >
-                  <i
-                    class='fa-solid fa-phone'
-                    style={{ transform: 'rotate(136deg)' }}
-                  ></i>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <></>
-          )}
-          {videoWindow ? (
-            <>
-              <div className='videoCall'>
-                <div className='videoFeedback'>
-                  {pendingCall ? (
-                    <>
-                      <div
-                        className='pendingCall'
-                        style={{ backgroundImage: `url(${username.picture})` }}
-                      >
-                        <div
-                          className='profile'
-                          style={{ backgroundImage: 'inherit' }}
-                        ></div>
-                        <span>{callState}</span>
-                        <h3>{username.username}</h3>
-                      </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                  {/* {} */}
-                  <video
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      position: 'absolute',
-                      top: '0px',
-                      left: '0px',
-                    }}
-                    playsInline
-                    autoPlay
-                    ref={remoteVideoRef}
-                    ></video>
-                  <div className='localFeedback'>
-                    <video
-                      muted
-                      playsInline
-                      autoPlay
-                      style={{ height: '100%', width: '100%' }}
-                      ref={localVideoRef}
-                    ></video>
-                  </div>
-                </div>
-                <div className='controls'>
-                  <div className='button ordinary'>
-                    <i class='fa-solid fa-volume-xmark'></i>
-                  </div>
-                  <div
-                    className='button danger'
-                    onClick={() => {
-                      closeVideoWindow()
-                      leaveCall()
-                    }}
-                  >
-                    <span>End Call</span>
-                  </div>
-                  <div className='button ordinary'>
-                    <i class='fa-solid fa-video-slash'></i>
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            <></>
-          )}
-
           <div className='button btn2' title='Coming soon'>
             <i class='fa-solid fa-phone'></i>
           </div>
-          <div className='button btn2' title='Coming soon'>
-            <i class='fa-solid fa-video' onClick={openVideoWindow}></i>
+          <div
+            className='button btn2'
+            title='currently in a beta stage. If any problem happens, simply refresh the page and also ask your friend to do the same'
+          >
+            <i
+              class='fa-solid fa-video'
+              onClick={() => {
+                setRequestCall({
+                  isCall: true,
+                  username: username,
+                  chatRoomID: chatRoomID,
+                })
+              }}
+            ></i>
           </div>
           <div
             className='button btn2'

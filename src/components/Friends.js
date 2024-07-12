@@ -15,7 +15,10 @@ const Friends = ({
   setIdentifier,
   selectFromFriends,
   getFromDetails,
-  setCurrKey
+  setCurrKey,
+  setIncomingVideoCaller,
+  setChatRoomID,
+  setIncomingUserInfo,
 }) => {
   const [checkStatus, setCheckStatus] = useState('none')
   const [lastEntry, setLastEntry] = useState('')
@@ -135,6 +138,29 @@ const Friends = ({
         setLastMsg(resp.data.text)
       })
   }
+  const showCurrUserChats = () => {
+    console.log('viewing key', currIden)
+    setCountNewMessage(0)
+    selectFromFriends(username)
+    getFromDetails(currInfo.fullName, currInfo.picture, currInfo.email)
+    setIdentifier(currIden)
+    setCurrKey(currIden)
+  }
+  useEffect(() => {
+    socket.on('sendcallingsignal', (m) => {
+      console.log(currInfo.email)
+      if (m.session === currInfo.email) {
+        // showCurrUserChats()
+        console.log(m.m.chatRoomID)
+        setChatRoomID(m.m.chatRoomID)
+        console.log(currInfo)
+        setIncomingUserInfo(currInfo)
+        setIncomingVideoCaller(true)
+
+        console.log('getting signal at friends')
+      }
+    })
+  }, [currInfo])
   useEffect(() => {
     getLastChatFunc()
   }, [username])
@@ -142,14 +168,7 @@ const Friends = ({
     <>
       <div
         className={identifier === currIden ? `friends effect` : `friends`}
-        onClick={() => {
-          console.log("viewing key",currIden)
-          setCountNewMessage(0)
-          selectFromFriends(username)
-          getFromDetails(currInfo.fullName, currInfo.picture, currInfo.email)
-          setIdentifier(currIden)
-          setCurrKey(currIden)
-        }}
+        onClick={showCurrUserChats}
       >
         <div
           className='effectGlow'

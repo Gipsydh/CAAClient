@@ -166,6 +166,7 @@ const ChatList = ({ chatRoomKey, username, list }) => {
         const viewImgHandler = () => {
           console.log('ck')
         }
+        console.log(val)
         return (
           <div
             key={key}

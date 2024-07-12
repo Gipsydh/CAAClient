@@ -5,8 +5,9 @@ import Search from './Search'
 import Friends from './Friends'
 import ChatHeading from './ChatHeading'
 import ShowChat from './ShowChat'
-import { useEffect, useState, useMemo } from 'react'
-import axios from 'axios'
+import VideoChat from './VideoChat'
+import { useEffect, useState, useMemo, useRef } from 'react'
+import axios, { isCancel } from 'axios'
 import { io } from 'socket.io-client'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -44,11 +45,11 @@ const ChatBox = () => {
   }, [currUserLogin])
   const [currShowUser, setCurrShowUser] = useState('')
   const [currFrnds, setCurrFrnds] = useState([])
-  const [currSearchedFrnds, setCurrSearchedFrnds]=useState([])
+  const [currSearchedFrnds, setCurrSearchedFrnds] = useState([])
   const [removeChatBar, setRemoveChatBar] = useState(false)
   const [chatRoomKey, setCurrChatRoomKey] = useState()
   const setCurrKey = (key) => {
-    console.log("setting key",key)
+    console.log('setting key', key)
     setCurrChatRoomKey(key)
   }
   const socket = useMemo(() => {
@@ -77,6 +78,7 @@ const ChatBox = () => {
   useEffect(() => {
     handleFunc1()
   }, [])
+
   const [findUsers, setFindUsers] = useState('')
   const handleOnChangeFindUsers = async (e) => {
     console.log(e.target.value)
@@ -84,7 +86,7 @@ const ChatBox = () => {
       element.includes(e.target.value)
     )
     console.log(newCurrFrnds)
-  
+
     setCurrSearchedFrnds(newCurrFrnds)
     // console.log(newCurrFrnds)
   }
@@ -103,10 +105,43 @@ const ChatBox = () => {
   const getFromDetails = (username, picture, email) => {
     setCurrShowUserName({ username: username, picture: picture, email: email })
   }
-
+  const initialRender = useRef(true)
+  const [requestCall, setRequestCall] = useState({ isCall: false })
+  const [incomingVideoCaller, setIncomingVideoCaller] = useState(false)
+  const [incomingUserInfo ,setIncomingUserInfo]=useState()
+  const [chatRoomID, setChatRoomID] = useState()
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false
+    } else {
+      let obj = {
+        isCall: false,
+        socket: socket,
+        chatRoomID: chatRoomID,
+        username: {
+          picture: '*',
+          username: '*',
+        },
+      }
+      console.log(obj)
+      setRequestCall(obj)
+    }
+  }, [incomingVideoCaller, chatRoomID])
+  
   return (
     <>
       <div className='box'>
+        <VideoChat
+          incomingUserInfo={incomingUserInfo}
+          incomingVideoCaller={incomingVideoCaller}
+          setIncomingVideoCaller={setIncomingVideoCaller}
+          setRequestCall={setRequestCall}
+          isCall={requestCall.isCall}
+          socket={socket}
+          chatRoomID={requestCall.chatRoomID}
+          username={requestCall.username}
+        ></VideoChat>
+
         <section className='sideBar'>
           {currUserLogin && (
             <Profile pic={currUserLogin.picture} bg={'#262626'}></Profile>
@@ -125,9 +160,7 @@ const ChatBox = () => {
             func={func}
           ></Search>
           <div className='allFriends'>
-            {
-            
-            currSearchedFrnds.map((val, i) => {
+            {currSearchedFrnds.map((val, i) => {
               console.log(val)
               return (
                 <Friends
@@ -142,6 +175,9 @@ const ChatBox = () => {
                   selectFromFriends={selectFromFriends}
                   getFromDetails={getFromDetails}
                   setCurrKey={setCurrKey}
+                  setIncomingVideoCaller={setIncomingVideoCaller}
+                  setChatRoomID={setChatRoomID}
+                  setIncomingUserInfo={setIncomingUserInfo}
                 ></Friends>
               )
             })}
@@ -176,6 +212,7 @@ const ChatBox = () => {
               username={currShowUser}
               currShowUserName={currShowUserName}
               chatRoomKey={chatRoomKey}
+              setRequestCall={setRequestCall}
             ></ShowChat>
           )}
         </section>

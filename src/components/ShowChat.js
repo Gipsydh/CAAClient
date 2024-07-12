@@ -10,7 +10,8 @@ const ShowChat = ({
   setRemoveChatBar,
   username,
   currShowUserName,
-  chatRoomKey
+  chatRoomKey,
+  setRequestCall,
 }) => {
   const [openChatFlag, setOpenChatFlag] = useState(false)
   useEffect(() => {
@@ -22,7 +23,7 @@ const ShowChat = ({
   const [currUser, setCurrUser] = useState('')
   const [sortedRoomId, setSortedRoomId] = useState('')
   const [caretPosition, setCaretPosition] = useState(0)
-  
+
   const [notificationPerm, setNotificationPerm] = useState(
     Notification.permission
   )
@@ -32,7 +33,7 @@ const ShowChat = ({
     return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
     })
-  }, [username, currShowUserName])
+  }, [])
 
   const getChatsFromDB = async () => {
     console.log('userToken:' + currRoomID.current)
@@ -123,7 +124,7 @@ const ShowChat = ({
     //     }
     //   })
     // }
-
+    console.log('received message')
     setChatList([...chatList, { ...msg, time: 'Today' }])
   })
   function isValidImageType(file) {
@@ -265,6 +266,7 @@ const ShowChat = ({
         openChatFlag={openChatFlag}
         setOpenChatFlag={setOpenChatFlag}
         handlePopup={closePopUp}
+        setRequestCall={setRequestCall}
       ></ChatHeading>
       <ChatList
         chatRoomKey={chatRoomKey}
