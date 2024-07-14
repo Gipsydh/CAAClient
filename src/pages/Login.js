@@ -6,7 +6,7 @@ import LoginCustomBtn from '../components/LoginCustomBtn'
 import '../css/login.css'
 export const Login = () => {
   return (
-    <GoogleOAuthProvider clientId='854963383011-bfcj46p7d506r3i9ivin8hvad05mh087.apps.googleusercontent.com'>
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_API_KEY}>
       <div className='container'>
         <section id='up'></section>
         <section id='down'></section>
