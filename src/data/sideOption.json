@@ -1,11 +1,4 @@
 [
   { "name": "home", "logo": "fa-solid fa-house" },
-  { "name": "home", "logo": "fa-solid fa-bell" },
-  { "name": "notifications", "logo": "fa-solid fa-house" },
-
-
-  { "name": "home", "logo": "fa-solid fa-house" },
-  { "name": "home", "logo": "fa-solid fa-house" },
-
-  { "name": "home", "logo": "fa-solid fa-house" }
+  { "name": "notifications", "logo": "fa-solid fa-bell" }
 ]

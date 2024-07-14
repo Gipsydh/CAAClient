@@ -226,6 +226,7 @@ const ChatHeading = ({
           <div
             className='backBtn button'
             onClick={() => {
+              document.querySelector(".hamburger").style.display="flex"
               setRemoveChatBar(!removeChatBar)
               handlePopup()
             }}

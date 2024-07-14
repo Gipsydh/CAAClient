@@ -10,6 +10,7 @@ import { useEffect, useState, useMemo, useRef } from 'react'
 import axios, { isCancel } from 'axios'
 import { io } from 'socket.io-client'
 import Skeleton from 'react-loading-skeleton'
+import SideViewBtn from './SIdeViewBtn'
 import 'react-loading-skeleton/dist/skeleton.css'
 const ChatBox = () => {
   const [identifier, setIdentifier] = useState(-1)
@@ -108,8 +109,9 @@ const ChatBox = () => {
   const initialRender = useRef(true)
   const [requestCall, setRequestCall] = useState({ isCall: false })
   const [incomingVideoCaller, setIncomingVideoCaller] = useState(false)
-  const [incomingUserInfo ,setIncomingUserInfo]=useState()
+  const [incomingUserInfo, setIncomingUserInfo] = useState()
   const [chatRoomID, setChatRoomID] = useState()
+  const [openSideOption, setOpenSideOption] = useState(false)
   useEffect(() => {
     if (initialRender.current) {
       initialRender.current = false
@@ -127,10 +129,37 @@ const ChatBox = () => {
       setRequestCall(obj)
     }
   }, [incomingVideoCaller, chatRoomID])
-  
+
   return (
     <>
       <div className='box'>
+        <div
+          onClick={() => {
+            const sideOptionBar = document.querySelector('.sideBar')
+            const hamburgerDiv = document.querySelector('.hamburger')
+            const overlayMobile = document.querySelector('.overlayMobile')
+            const leftComingBar = document.querySelector('.leftComingBar')
+
+            if (!openSideOption) {
+              hamburgerDiv.style.left = '80%'
+              sideOptionBar.style.height = '100%'
+              sideOptionBar.style.left = '0px'
+              overlayMobile.style.display = 'flex'
+            } else {
+              hamburgerDiv.style.left = '25px'
+              sideOptionBar.style.height = '100%'
+              sideOptionBar.style.left = '-80px'
+              overlayMobile.style.display = 'none'
+              // setTimeout(() => {
+              //   if (leftComingBar) leftComingBar.style.display = 'block'
+              // }, 1000);
+            }
+            setOpenSideOption(!openSideOption)
+          }}
+        >
+          <SideViewBtn></SideViewBtn>
+        </div>
+        <div className='overlayMobile'></div>
         <VideoChat
           incomingUserInfo={incomingUserInfo}
           incomingVideoCaller={incomingVideoCaller}
@@ -146,7 +175,7 @@ const ChatBox = () => {
           {currUserLogin && (
             <Profile pic={currUserLogin.picture} bg={'#262626'}></Profile>
           )}
-          <SideOptions></SideOptions>
+          <SideOptions openSideOption={openSideOption}></SideOptions>
           <Settings></Settings>
         </section>
         <section

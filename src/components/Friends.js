@@ -168,7 +168,10 @@ const Friends = ({
     <>
       <div
         className={identifier === currIden ? `friends effect` : `friends`}
-        onClick={showCurrUserChats}
+        onClick={()=>{
+          showCurrUserChats()
+           document.querySelector('.hamburger').style.display = 'none'
+        }}
       >
         <div
           className='effectGlow'

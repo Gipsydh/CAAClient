@@ -1,0 +1,47 @@
+Container for the loader
+.loader {
+  position: relative;
+  width: 10em;
+  height: 10em;
+}
+/* Track elements */
+.track, .inner-track {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset -0.1em -0.1em 0.2em #d1d1d1, inset 0.1em 0.1em 0.2em #ffffff;
+}
+
+.inner-track {
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  border: 2em solid #f0f0f0;
+}
+/* Orb element */
+.orb {
+  position: absolute;
+  width: 1.5em;
+  height: 1.5em;
+  top: 50%;
+  left: 50%;
+  background-color: #c0cfda;
+  border-radius: 50%;
+  animation: spin 1.5s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  background: radial-gradient(circle at 30% 30%, #ffffff, #ccc);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 -2px 4px rgba(255, 255, 255, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(90deg) translate(3em) rotate(-90deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(450deg) translate(3em) rotate(-450deg);
+  }
+}
+

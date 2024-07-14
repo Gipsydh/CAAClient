@@ -2,21 +2,26 @@ import React from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
+import LoginCustomBtn from '../components/LoginCustomBtn'
 import '../css/login.css'
 export const Login = () => {
   return (
     <GoogleOAuthProvider clientId='854963383011-bfcj46p7d506r3i9ivin8hvad05mh087.apps.googleusercontent.com'>
       <div className='container'>
+        <section id='up'></section>
+        <section id='down'></section>
+        <section id='left'></section>
+        <section id='right'></section>
         <div className='left'>
-          <div className='logo'>
+          {/* <div className='logo'>
             <div className='lg'></div>
             <span>ChatNest</span>
           </div>
           <h2 style={{ marginBottom: '90px', marginTop: '10px' }}>
             {' '}
             Log in to your account
-          </h2>
-          <GoogleLogin
+          </h2> */}
+          {/* <GoogleLogin
             type='icon'
             size='large'
             shape='circle'
@@ -37,7 +42,11 @@ export const Login = () => {
             onError={() => {
               console.log('Login Failed')
             }}
-          />
+          /> */}
+          <div className='pointMsg'>
+            <span>Login with Google</span>
+          </div>
+          <LoginCustomBtn></LoginCustomBtn>
         </div>
         <div className='right'>
           <div className='upper'>

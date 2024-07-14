@@ -198,11 +198,17 @@ const VideoChat = ({
     <>
       {incomingVideoCaller ? (
         <motion.div
+          initial={{
+            scale: 0.5,
+            opacity: 0,
+          }}
+          animate={{
+            scale: 1,
+            opacity: 1,
+          }}
           className='incomingVideocall'
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
         >
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', alignItems:'center'}}>
             <div
               className='userImg'
               style={{ backgroundImage: `url(${incomingUserInfo.picture})` }}
