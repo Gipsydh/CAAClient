@@ -7,11 +7,13 @@ import '../css/login.css'
 export const Login = () => {
   return (
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_API_KEY}>
-      <div className='container' style={{overflow:'hidden'}}>
-        {/* <section id='up'></section>
-        <section id='down'></section>
-        <section id='left'></section>
-        <section id='right'></section> */}
+      <div className='container' style={{ overflow: 'hidden' }}>
+        <div style={{position:"fixed",height:"100vh", width:"100vw", overflow:"hidden"}}>
+          <section id='up'></section>
+          <section id='down'></section>
+          <section id='left'></section>
+          <section id='right'></section>
+        </div>
         <div className='left'>
           {/* <div className='logo'>
             <div className='lg'></div>
