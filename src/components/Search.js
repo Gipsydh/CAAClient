@@ -32,7 +32,7 @@ const Search = ({
   return (
     <>
       <div className='fixedNavbar'>
-        <div className='search inputBar'>
+        <div className={`search inputBar ${(type==='search')?'mobileSearchView':''}`} >
           {type !== 'search' ? (
             <>
               <i

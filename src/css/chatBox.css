@@ -119,6 +119,7 @@
   padding: 0 25px;
   overflow-x: visible;
   height: 80vh;
+  background-color: var(--chatBar-color);
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */
   overflow-y: scroll;
@@ -305,7 +306,7 @@
   width: 100%;
   background-color: var(--chatBar-color);
   left: 0%;
-  top: 20%;
+  top:130px;
   z-index: 20;
   padding: 25px;
 }
@@ -830,6 +831,9 @@
   }
 }
 @media all and (max-width: 900px) {
+  .mobileSearchView{
+    margin-left: 60px;
+  }
   .overlayMobile {
     display: none;
     height: 100vh;
@@ -842,7 +846,6 @@
     position: relative;
   }
   .inputBar {
-    margin-left: 60px;
     /* position: absolute; */
     width: calc(100% - 60px);
   }
@@ -957,5 +960,8 @@
     top:5%;
     left: 5%;
     z-index: 10004;
+  }
+  .allFriends{
+    height: 100vh;
   }
 }

@@ -9,6 +9,9 @@ h2 {
   background-repeat: no-repeat;
   background-position: right;
   background-size: cover;
+  overflow: hidden;
+     background-image: linear-gradient(80deg, rgb(36, 6, 39),
+            rgb(2, 1, 2), rgb(147, 59, 247));
 }
 .container .left {
   border-top-right-radius: 20px;
@@ -89,22 +92,22 @@ font-size: 17px;
  height: 100%;
  backdrop-filter: blur(5px);
 } */
-body {
+/* body {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    background-image: linear-gradient(80deg, rgb(36, 6, 39),
-            rgb(2, 1, 2), rgb(147, 59, 247));
+    height: 100vh;
+    width: 100vw;
+ 
     overflow: hidden;
 
-}
-.custContainer {
+} */
+/* .custContainer {
     max-width: 1200px;
     padding: 0 15px;
     margin: 0 auto;
     width: 100%;
     
-}
+} */
 
 #up {
     position: absolute;
