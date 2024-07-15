@@ -35,7 +35,7 @@ const ShowUsers = ({ user }) => {
   }
   useEffect(() => {
     getUsers()
-  }, [])
+  }, [user])
   return (
     <>
       <div
