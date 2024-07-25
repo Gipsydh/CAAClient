@@ -179,6 +179,7 @@ const ShowChat = ({
     socket.emit('message', { obj, target: currRoomID.current })
     let fileReader = new FileReader()
     // fileReader.onload=func
+    console.log(formData)
     if (file) {
       axios.post(`${process.env.REACT_APP_LIVE_URL}/api/v1/chats`, formData, {
         headers: {
