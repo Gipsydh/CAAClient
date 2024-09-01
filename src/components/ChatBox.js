@@ -169,6 +169,7 @@ const ChatBox = () => {
           socket={socket}
           chatRoomID={requestCall.chatRoomID}
           username={requestCall.username}
+          currUserLogin={currUserLogin}
         ></VideoChat>
 
         <section className='sideBar'>

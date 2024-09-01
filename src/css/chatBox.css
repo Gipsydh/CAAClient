@@ -728,7 +728,16 @@
   background-color: var(--inputBar-color);
   border-radius: 30px;
 }
+.localFeedback .localFeedbackUser{
+  height: 60px;
+  width:60px;
+  border-radius: 50%;
+  background-position: center;
+  background-size: contain;
+  
+}
 .videoCall .localFeedback {
+  overflow: hidden;
   height: 150px;
   width: 250px;
   background-color: black;
@@ -737,6 +746,18 @@
   bottom: 10px;
   z-index: 3;
   border-radius: 10px;
+  
+}
+.localFeedback .innerLocalFeedbackWrapper{
+  background-color: var(--sidebar-color);
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .videoCall .controls .button i {
   color: var(--button2-color);

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 import Peer from 'simple-peer'
 
 const VideoChat = ({
@@ -11,15 +11,18 @@ const VideoChat = ({
   socket,
   chatRoomID,
   username,
+  currUserLogin,
 }) => {
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
   const connectionRef = useRef(null)
   const [callState, setCallState] = useState('calling to...')
-
+  const [videoEnabled, setVideoEnabled] = useState(null)
   const [videoWindow, setVideoWindow] = useState(false)
   const [busyLine, setBusyLine] = useState(false)
-  const [stream, setStream] = useState()
+  const [stream, setStream] = useState(null)
+  const [stream1, setStream1] = useState(null)
+  const [remoteVideoEnabled, setRemoteVideoEnabled] = useState(false)
   const [call, setCall] = useState({})
   const [pendingCall, setPendingCall] = useState(true)
 
@@ -65,19 +68,50 @@ const VideoChat = ({
     console.log(currStream)
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = currStream
-      setStream(currStream)
+      // setStream(currStream)
     }
     return currStream
   }
+  useEffect(() => {
+    socket.on('videostreamEnabled', () => {
+      console.log('videoToggling')
+      setRemoteVideoEnabled(!remoteVideoEnabled)
+    })
+  }, [socket, remoteVideoEnabled])
+  const toggleVideo = () => {
+    console.log('emitting')
+    socket.emit('videostreamEnabled', {
+      videoEnabled,
+      chatRoomID,
+      username: username.email,
+    })
+    if (stream) {
+      console.log('stopping audio')
 
-  const callUser = async () => {
-    try {
-      const currStream = await makeStream()
-      setStream(currStream)
+      stream.getVideoTracks().forEach((track) => {
+        console.log(track.enabled)
+        track.enabled = !track.enabled
+      })
+      setStream(stream)
+      setVideoEnabled(!videoEnabled)
+    }
+    if (stream1) {
+      console.log('stopping audio')
+
+      stream1.getVideoTracks().forEach((track) => {
+        console.log(track.enabled)
+        track.enabled = !track.enabled
+      })
+      setStream(stream)
+      setVideoEnabled(!videoEnabled)
+    }
+  }
+  useEffect(() => {
+    if (stream) {
       const peer = new Peer({
         initiator: true,
         trickle: false,
-        stream: currStream,
+        stream: stream,
       })
 
       peer.on('signal', (data) => {
@@ -109,40 +143,59 @@ const VideoChat = ({
       })
       console.log(connectionRef.current)
       connectionRef.current = peer
+    }
+  }, [stream])
+  const callUser = async () => {
+    try {
+      const currStream = await makeStream()
+      setStream(currStream)
     } catch (error) {
       console.log('error happened')
     }
   }
+  useEffect(() => {
+    if (stream1) {
+      setIncomingVideoCaller(false)
+      console.log('answering call')
+
+      const peer = new Peer({
+        initiator: false,
+        trickle: false,
+        stream: stream1,
+      })
+      console.log(peer)
+      peer.on('signal', (data) => {
+        console.log(data)
+        console.log(chatRoomID)
+        socket.emit('answercall', { signal: data, chatRoomID })
+      })
+      peer.on('stream', (currentStream) => {
+        console.log('call received')
+        if (currentStream) {
+          console.log(currentStream)
+          currentStream.addEventListener('addtrack', () => {
+            console.log('toggling video')
+          })
+          currentStream.addEventListener('removetrack', () => {
+            console.log('toggling video')
+          })
+        }
+        remoteVideoRef.current.srcObject = currentStream
+        setPendingCall(false)
+      })
+      peer.on('error', (e) => {
+        console.log(e)
+        setPendingCall(true)
+        setCallState('Some error happened :(')
+      })
+      peer.signal(call.signal.data)
+      connectionRef.current = peer
+    }
+  }, [stream1])
   const answerCall = async () => {
     try {
-      await makeStream().then((currStream) => {
-        setIncomingVideoCaller(false)
-        console.log('answering call')
-
-        const peer = new Peer({
-          initiator: false,
-          trickle: false,
-          stream: currStream,
-        })
-        console.log(peer)
-        peer.on('signal', (data) => {
-          console.log(data)
-          console.log(chatRoomID)
-          socket.emit('answercall', { signal: data, chatRoomID })
-        })
-        peer.on('stream', (currentStream) => {
-          console.log('call received')
-          remoteVideoRef.current.srcObject = currentStream
-          setPendingCall(false)
-        })
-        peer.on('error', (e) => {
-          console.log(e)
-          setPendingCall(true)
-          setCallState('Some error happened :(')
-        })
-        peer.signal(call.signal.data)
-        connectionRef.current = peer
-      })
+      const currStream = await makeStream()
+      setStream1(currStream)
     } catch (error) {
       console.log('error happened')
     }
@@ -154,6 +207,8 @@ const VideoChat = ({
       if (connectionRef.current) {
         setVideoWindow(false)
         setPendingCall(true)
+        setVideoEnabled(null)
+        setRemoteVideoEnabled(false)
         connectionRef.current.destroy()
         connectionRef.current = null
         if (localVideoRef.current && localVideoRef.current.srcObject) {
@@ -168,6 +223,12 @@ const VideoChat = ({
       console.error('Error closing connection:', e)
     }
   })
+  // useEffect(() => {
+  //   if (videoEnabled) {
+  //     if (videoEnabled) setPendingCall(true)
+  //     else setPendingCall(false)
+  //   }
+  // }, [videoEnabled])
   const leaveCall = () => {
     // stream.getTracks().forEach((track) => {
     //   track.stop()
@@ -175,6 +236,15 @@ const VideoChat = ({
 
     // console.log(connectionRef.current)
     setPendingCall(true)
+    setVideoEnabled(null)
+    setRemoteVideoEnabled(false)
+
+    // setRemoteVideoEnabled(false)
+    socket.emit('videostreamEnabled', {
+      videoEnabled,
+      chatRoomID,
+      username: username.email,
+    })
     setCallState('Calling to...')
 
     if (localVideoRef.current && localVideoRef.current.srcObject) {
@@ -208,7 +278,7 @@ const VideoChat = ({
           }}
           className='incomingVideocall'
         >
-          <div style={{ display: 'flex', alignItems:'center'}}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <div
               className='userImg'
               style={{ backgroundImage: `url(${incomingUserInfo.picture})` }}
@@ -280,6 +350,35 @@ const VideoChat = ({
               ) : (
                 <></>
               )}
+              {remoteVideoEnabled ? (
+                <>
+                  <div
+                    className='pendingCall'
+                    style={{
+                      backgroundImage: `url(${
+                        incomingUserInfo !== undefined
+                          ? incomingUserInfo.picture
+                          : username.picture
+                      })`,
+                      position: 'absolute',
+                      zIndex: '100',
+                    }}
+                  >
+                    <div
+                      className='profile'
+                      style={{ backgroundImage: 'inherit' }}
+                    ></div>
+                    <span></span>
+                    <h3>
+                      {incomingUserInfo !== undefined
+                        ? incomingUserInfo.fullName
+                        : username.username}
+                    </h3>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
               {/* {} */}
               <video
                 style={{
@@ -301,6 +400,18 @@ const VideoChat = ({
                   style={{ height: '100%', width: '100%' }}
                   ref={localVideoRef}
                 ></video>
+                {videoEnabled ? (
+                  <div className='innerLocalFeedbackWrapper'>
+                    <div
+                      className='localFeedbackUser'
+                      style={{
+                        backgroundImage: `url(${currUserLogin.picture})`,
+                      }}
+                    ></div>
+                  </div>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
             <div className='controls'>
@@ -327,8 +438,15 @@ const VideoChat = ({
               >
                 <span>End Call</span>
               </div>
-              <div className='button ordinary'>
-                <i class='fa-solid fa-video-slash'></i>
+              <div className='button ordinary' onClick={toggleVideo}>
+                <i
+                  style={
+                    videoEnabled
+                      ? { transition: '0.15s ease-in-out', color: 'red' }
+                      : {}
+                  }
+                  class='fa-solid fa-video-slash'
+                ></i>
               </div>
             </div>
           </motion.div>
