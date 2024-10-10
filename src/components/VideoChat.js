@@ -8,6 +8,7 @@ const VideoChat = ({
   setIncomingVideoCaller,
   setRequestCall,
   isCall,
+  isPhoneCall,
   socket,
   chatRoomID,
   username,
@@ -25,7 +26,7 @@ const VideoChat = ({
   const [remoteVideoEnabled, setRemoteVideoEnabled] = useState(false)
   const [call, setCall] = useState({})
   const [pendingCall, setPendingCall] = useState(true)
-
+  const toggleVideoRef = useRef(null)
   useEffect(() => {
     console.log('triggered')
     console.log(incomingUserInfo)
@@ -78,6 +79,20 @@ const VideoChat = ({
       setRemoteVideoEnabled(!remoteVideoEnabled)
     })
   }, [socket, remoteVideoEnabled])
+  const removeVideo = () => {
+    if (stream) {
+      stream.getVideoTracks().forEach((track) => {
+        console.log(track.enabled)
+        track.enabled = !track.enabled
+      })
+    }
+  }
+  useEffect(() => {
+    if (isPhoneCall) {
+      removeVideo()
+      setVideoEnabled(true)
+    }
+  }, [stream])
   const toggleVideo = () => {
     console.log('emitting')
     socket.emit('videostreamEnabled', {
@@ -438,7 +453,11 @@ const VideoChat = ({
               >
                 <span>End Call</span>
               </div>
-              <div className='button ordinary' onClick={toggleVideo}>
+              <div
+                className='button ordinary'
+                onClick={toggleVideo}
+                ref={toggleVideoRef}
+              >
                 <i
                   style={
                     videoEnabled

@@ -166,6 +166,7 @@ const ChatBox = () => {
           setIncomingVideoCaller={setIncomingVideoCaller}
           setRequestCall={setRequestCall}
           isCall={requestCall.isCall}
+          isPhoneCall={requestCall.isPhoneCall}
           socket={socket}
           chatRoomID={requestCall.chatRoomID}
           username={requestCall.username}

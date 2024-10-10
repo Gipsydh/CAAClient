@@ -61,13 +61,18 @@ const Search = ({
                 theme='google'
                 onEmojiClick={handleEmoji}
               />
+          <div className="element2Skull">
+
+          </div>
             </>
           ) : (
             <>
               <i class={logo}></i>
+              <div className="festivalElm">
+
+              </div>
             </>
           )}
-
           <input
             type='text'
             value={msg}

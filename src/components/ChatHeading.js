@@ -182,8 +182,8 @@ const ChatHeading = ({
         <div className='overlayTheme'>
           <motion.div
             className='chooseTheme'
-            initial={{ scale: 0.5 ,opacity:0}}
-            animate={{ scale: 1 ,opacity:1}}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
           >
             <div className='closeBtn'>
               <i
@@ -226,7 +226,7 @@ const ChatHeading = ({
           <div
             className='backBtn button'
             onClick={() => {
-              document.querySelector(".hamburger").style.display="flex"
+              document.querySelector('.hamburger').style.display = 'flex'
               setRemoveChatBar(!removeChatBar)
               handlePopup()
             }}
@@ -259,7 +259,17 @@ const ChatHeading = ({
         </div>
         <div className='options'>
           <div className='button btn2' title='Coming soon'>
-            <i class='fa-solid fa-phone'></i>
+            <i
+              class='fa-solid fa-phone'
+              onClick={() => {
+                setRequestCall({
+                  isPhoneCall:true,
+                  isCall: true,
+                  username: username,
+                  chatRoomID: chatRoomID,
+                })
+              }}
+            ></i>
           </div>
           <div
             className='button btn2'

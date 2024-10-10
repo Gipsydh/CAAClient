@@ -161,6 +161,7 @@
   position: relative;
   display: flex;
   justify-content: flex-start;
+  z-index: 10;
 }
 .friends .upper .info {
   display: flex;
@@ -177,6 +178,8 @@
   position: absolute;
 }
 .friends .lower {
+  position: relative;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -212,6 +215,25 @@
   border-bottom: 2px solid var(--inputBar-color);
   background-color: var(--chatHeading-background);
 }
+.chatHeading::before {
+  content: '';
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-image: url('../../public/resources/pngtree-silhouette-of-a-witch-flying-on-broomstick-with-pumpkins-bats-and-image_15940057.jpg');
+  background-position: 10% 14%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  mask: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  position: absolute;
+  height: 110px;
+  z-index: 10;
+}
 .chatHeading .userInfo {
   display: flex;
 }
@@ -222,6 +244,8 @@
   line-height: 15px;
 }
 .chatHeading .options {
+  z-index: 11;
+
   display: flex;
   width: 300px;
   align-items: center;
@@ -229,6 +253,7 @@
 }
 .chatHeading .options i {
   font-size: 25px;
+  color: white;
 }
 .sendChat {
   position: absolute;
@@ -250,6 +275,19 @@
   align-items: center;
   border-radius: 50%;
 }
+.element2Skull {
+  background-image: url('../../public/resources/pngtree-3d-skull-with-burning-candle-halloween-holiday-concept-png-image_10021608.png');
+  position: absolute;
+  top: -4px;
+  left: 5px;
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 45px;
+  width: 41px;
+  transform: rotate(-15deg);
+}
 .chatList {
   /* background-color: red; */
   height: calc(100% - 200px);
@@ -257,6 +295,12 @@
   padding: 0 10px;
   scroll-behavior: smooth;
   background-color: var(--chatList-background);
+
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.chatList::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 .chatList .chatLeft {
   display: flex;
@@ -306,7 +350,7 @@
   width: 100%;
   background-color: var(--chatBar-color);
   left: 0%;
-  top:130px;
+  top: 130px;
   z-index: 20;
   padding: 25px;
 }
@@ -436,6 +480,26 @@
 }
 .effect {
   background-color: var(--sidebar-color);
+  position: relative;
+}
+.effect::before {
+  z-index: 9;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: url('../../public/resources/—Pngtree—halloween\ wallpaper\ background\ full\ moon_3429141.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  mask: linear-gradient(to left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 .effectGlow {
   position: absolute;
@@ -451,6 +515,7 @@
 }
 .chatHeading .backBtn {
   display: none;
+  z-index: 11;
 }
 .chatList .chatData .msgTime {
   position: absolute;
@@ -597,7 +662,7 @@
 }
 .overlayTheme .chooseTheme {
   width: 50%;
-  height: 60%;
+  /* height: 60%; */
   background-color: var(--friend-background);
   border-radius: 20px;
   display: flex;
@@ -612,6 +677,20 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+}
+.festivalElm {
+  background-image: url('../../public/resources/Hand-drawn-design-halloween-Pumpkin-cat-on-transparent-background-PNG.png');
+
+  height: 60px;
+  width: 60px;
+  scale: 0.7;
+  position: absolute;
+  right: 27px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  top: 23px;
 }
 .overlayTheme .chooseTheme .options .cardColor {
   margin: 10px;
@@ -728,13 +807,12 @@
   background-color: var(--inputBar-color);
   border-radius: 30px;
 }
-.localFeedback .localFeedbackUser{
+.localFeedback .localFeedbackUser {
   height: 60px;
-  width:60px;
+  width: 60px;
   border-radius: 50%;
   background-position: center;
   background-size: contain;
-  
 }
 .videoCall .localFeedback {
   overflow: hidden;
@@ -746,9 +824,8 @@
   bottom: 10px;
   z-index: 3;
   border-radius: 10px;
-  
 }
-.localFeedback .innerLocalFeedbackWrapper{
+.localFeedback .innerLocalFeedbackWrapper {
   background-color: var(--sidebar-color);
   height: 100%;
   width: 100%;
@@ -771,13 +848,14 @@
   font-size: 1.2rem;
 }
 .incomingVideocall {
-  z-index: 1001;
+  z-index: 10002;
   width: 50%;
   height: 80px;
   background-color: var(--sidebar-color);
   position: fixed;
   top: 30px;
-  left: 35%;
+  left: 25%;
+  transform: translateX(-50%);
   border-radius: 50px;
   padding: 10px;
   display: flex;
@@ -852,7 +930,7 @@
   }
 }
 @media all and (max-width: 900px) {
-  .mobileSearchView{
+  .mobileSearchView {
     margin-left: 60px;
   }
   .overlayMobile {
@@ -895,6 +973,7 @@
     width: 90%;
     height: 90%;
     padding: 7px;
+    left: 5%;
   }
   .videoCall .videoFeedback {
     height: 85%;
@@ -920,7 +999,7 @@
   .chatHeading .backBtn i {
     color: var(--button2-color);
   }
-  .incomingVideocall{
+  .incomingVideocall {
     width: 80%;
     left: 10%;
   }
@@ -951,6 +1030,9 @@
     padding: 0 10px;
     background-color: var(--chatHeading-background);
   }
+  .chatHeading::before {
+    height: 80px;
+  }
   .chatHeading .userInfo .info h5,
   .chatHeading .userInfo .info span {
     font-size: 12px;
@@ -966,23 +1048,22 @@
     padding: 10px 0;
   }
   .leftComingBar .singleNotification {
-    scale: .8;
+    scale: 0.8;
   }
 }
-@media all and (max-width: 500px){
-  .incomingVideocall h3{
+@media all and (max-width: 500px) {
+  .incomingVideocall h3 {
     font-size: 13px;
-
   }
-  .incomingVideocall span{
+  .incomingVideocall span {
     font-size: 10px;
   }
-  .videoCall{
-    top:5%;
+  .videoCall {
+    top: 5%;
     left: 5%;
     z-index: 10004;
   }
-  .allFriends{
+  .allFriends {
     height: 100vh;
   }
 }
