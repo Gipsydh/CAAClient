@@ -37,7 +37,7 @@ const LoginCustomBtn = () => {
               withCredentials: true,
             })
             .then((resp) => {
-              window.location.href = `${process.env.REACT_APP_LIVE_CLIENT}/chats`
+              window.location.replace(`${process.env.REACT_APP_LIVE_CLIENT}/chats`)
             })
         })
         .catch((err) => console.log(err))

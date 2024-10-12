@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import ChatBox from '../components/ChatBox'
-
 const Chats = () => {
+  
   // return (
   //   <>
   //     <form action='' onSubmit={handleSubmit}>

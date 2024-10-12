@@ -42,7 +42,7 @@ const ChatList = ({ chatRoomKey, username, list }) => {
  
   return (
     <div className='chatList'>
-      <div className={`goToLast goToLast${chatRoomKey}`} style={{zIndex:1001}} ref={goToLastBtn} onClick={goDownFunc}>
+      <div className={`goToLast goToLast${chatRoomKey}`} style={{zIndex:999}} ref={goToLastBtn} onClick={goDownFunc}>
         <i class='fa-solid fa-arrow-down'></i>
       </div>
       {list.map((val, key) => {

@@ -25,11 +25,32 @@ const ChatHeading = ({
   const [lastEntry, setLastEntry] = useState()
   const [openOptions, setOpenOptions] = useState(false)
   const [themeFlag, setThemeFlag] = useState(false)
+  const buttonRef = useRef(null)
   const socket = useMemo(() => {
     return io(process.env.REACT_APP_LIVE_URL, {
       withCredentials: true,
     })
   }, [username])
+  useEffect(() => {
+    // Function to handle the popstate event
+    const handlePopState = (event) => {
+      // Check if the button reference exists
+      window.history.pushState(null, document.title, window.location.href)
+
+      if (buttonRef.current) {
+        buttonRef.current.click() // Trigger the button click
+      }
+    }
+
+    // Add event listener for popstate
+    window.addEventListener('popstate', handlePopState)
+    window.history.pushState(null, document.title, window.location.href)
+
+    return () => {
+      // Clean up the event listener on component unmount
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
   // const getUserMedia = async () => {
   //   try {
   //     await navigator.mediaDevices
@@ -175,7 +196,7 @@ const ChatHeading = ({
       }
     } catch (error) {}
   }
-  
+
   return (
     <>
       {themeFlag ? (
@@ -225,6 +246,7 @@ const ChatHeading = ({
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div
             className='backBtn button'
+            ref={buttonRef}
             onClick={() => {
               document.querySelector('.hamburger').style.display = 'flex'
               setRemoveChatBar(!removeChatBar)
@@ -263,7 +285,7 @@ const ChatHeading = ({
               class='fa-solid fa-phone'
               onClick={() => {
                 setRequestCall({
-                  isPhoneCall:true,
+                  isPhoneCall: true,
                   isCall: true,
                   username: username,
                   chatRoomID: chatRoomID,
