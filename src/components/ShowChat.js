@@ -108,25 +108,26 @@ const ShowChat = ({
     })
   }, [username])
   console.log(socket.on)
-  socket.on('receive-msg', (msg) => {
-    // if (notificationPerm==='granted') {
-    //   new Notification('ChatNest ',{
-    //     body:"this is a notification"
-    //   })
-    // }
-    // else if(notificationPerm!=='denied'){
-    //   Notification.requestPermission().then(permission=>{
-    //     setNotificationPerm(permission)
-    //     if(permission==='granted'){
-    //       new Notification('ChatNest ', {
-    //         body: 'this is a notification',
-    //       })
-    //     }
-    //   })
-    // }
-    console.log('received message')
-    setChatList([...chatList, { ...msg, time: 'Today' }])
-  })
+  useEffect(() => {
+    const handleIncomingMsg = (msg) => {
+      console.log('received message')
+      console.log(msg)
+      console.log(username)
+
+      if (msg.chatRoomID.includes(username)) {
+        setChatList((prevChatList) => [
+          ...prevChatList,
+          { ...msg, time: 'Today' },
+        ])
+      }
+    }
+
+    socket.on('receive-msg', handleIncomingMsg)
+
+    return () => {
+      socket.off('receive-msg', handleIncomingMsg)
+    }
+  }, [username])
   function isValidImageType(file) {
     const validImageTypes = [
       'image/jpeg',
