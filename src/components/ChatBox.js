@@ -191,7 +191,12 @@ const ChatBox = () => {
             func={func}
           ></Search>
           <div className='allFriends'>
-            {currSearchedFrnds.map((val, i) => {
+            {currSearchedFrnds.length===0?<>
+            <div className="haveNoFrnds">
+
+            </div>
+            <span style={{textAlign:"center",display:"block"}}>Feeling lonely? Try to make some friends by tapping on "Add Friends" button.</span>
+            </>:currSearchedFrnds.map((val, i) => {
               console.log(val)
               return (
                 <Friends

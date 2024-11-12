@@ -703,6 +703,14 @@
   border-radius: 10px;
   transition: 0.2s ease-in-out;
 }
+.haveNoFrnds {
+  height: 50%;
+  width: 100%;
+  background-image: url('../../public/resources/noFriends.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
 .overlayTheme .chooseTheme .closeBtn {
   position: absolute;
   right: 30px;
